@@ -44,7 +44,7 @@ unittest() {
 # Helpers:
 
 jsfiles() {
-  find $(rootdir) -path $(condadir) -prune -o -type f -name "*.json*" -print | sort
+  find $(rootdir) -type f -name "*.json*" -print | sort
 }
 
 msg() {
@@ -60,13 +60,13 @@ rootdir() {
 }
 
 shfiles() {
-  find $(rootdir) -path $(condadir) -prune -o -type f -print | sort | while read -r x; do
+  find $(rootdir) -type f -print | sort | while read -r x; do
     file $x | grep -q "Bourne-Again shell script" && echo $x
   done | sort
 }
 
 yamlfiles() {
-  find $(rootdir) -path $(condadir) -prune -o -type f -name "*.yaml" -print | sort | grep -v "^.*/aigfs.yaml$"
+  find $(rootdir) -type f -name "*.yaml" -print | sort | grep -v "^.*/aigfs.yaml$"
 }
 
 # Main entrypoint:
