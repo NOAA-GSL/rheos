@@ -1,66 +1,93 @@
-#!/bin/bash -eu
+#!/bin/bash
 
-# This script is called 1. By conda-build, to test code at package-build time, and 2. By "make test"
-# to test code in a live development shell. Its name is dictated by conda-build (see URL below for
-# details). If run with no arguments, it executes all test types: linting, typechecking, unit
-# testing, and basic CLI verification. It can also be run with "lint", "typecheck", "unittest", or
-# "cli" arguments to run only a single test type. (The "make lint", "make typecheck", and "make
-# unittest" targets provided by the root-directory Makefile run the first test types individually;
-# the CLI can be manually tested.)
+set -aeuo pipefail
 
-# https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#test-section
+# Tools:
 
 cli() {
   msg Testing CLI
-  (
-    set -eux
-    wxvx --version
-  )
+  rheos --version
+  msg OK
+}
+
+format() {
+  msg Formatting JSON
+  for f in $(jsfiles); do
+    jq -S . $f >$f.new || (echo "    in $f" && rm $f.new && false)
+    if cmp --quiet $f.new $f; then
+      rm $f.new
+    else
+      mv $f.new $f
+    fi
+  done
+  msg Formatting shell code
+  shfmt --indent 2 --write $(shfiles)
+  msg Formatting Python code
+  ruff format $(pyfiles)
+  msg Sorting Python imports
+  ruff check --select I --fix $(pyfiles)
   msg OK
 }
 
 lint() {
-  msg Running linter
-  (
-    set -eux
-    ruff check .
-  )
+  msg Linting YAML
+  yamllint --no-warnings $(yamlfiles)
+  msg Linting shell code
+  shellcheck --format=gcc --severity=info --shell=bash $(shfiles)
+  msg Linting Python code
+  ruff check $(pyfiles)
   msg OK
+}
+
+typecheck() {
+  msg Typechecking Python code
+  MYPYPATH=$(rootdir)/drivers mypy $(pyfiles)
+  msg OK
+}
+
+unittest() {
+  msg Running Python unit tests
+  pytest --cov=rheos --cov-report=term-missing --ignore=conda/ .
+  msg OK
+}
+
+# Helpers:
+
+jsfiles() {
+  find $(rootdir) -type f -name "*.json*" -print | sort
 }
 
 msg() {
   echo "=> $*"
 }
 
-typecheck() {
-  msg Running typechecker
-  (
-    set -eux
-    mypy .
-  )
-  msg OK
+pyfiles() {
+  find $(rootdir) -type f -name "*.py" -print | sort
 }
 
-unittest() {
-  msg Running unit tests
-  (
-    set -eux
-    pytest --cov=wxvx -n 4 .
-  )
-  msg OK
+rootdir() {
+  readlink -f $(dirname $(dirname $0))
 }
 
-if [[ "${CONDEV_SHELL:-}" = 1 ]]; then
-  cd $(dirname $0)/../src
-else
-  cd ../test_files
-fi
+shfiles() {
+  find $(rootdir) -type f -print | sort | while read -r x; do
+    file $x | grep -q "Bourne-Again shell script" && echo $x
+  done | sort
+}
+
+yamlfiles() {
+  find $(rootdir) -type f -name "*.yaml" -print | sort
+}
+
+# Main entrypoint:
+
+test $# -eq 0 && echo "usage: $(basename $0) tool [args ...]" && exit 1
 
 if [[ -n "${1:-}" ]]; then
-  # Run single specified code-quality tool.
+  # Run single tool:
   $1
 else
-  # Run all code-quality tools.
+  # Run all tools:
   lint
   typecheck
   unittest

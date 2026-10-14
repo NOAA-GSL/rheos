@@ -15,20 +15,20 @@ devshell:
 	condev-shell || true
 
 format:
-	@./run format
+	@recipe/run_test.sh format
 
 lint:
-	@./run lint
+	@recipe/run_test.sh lint
 
 meta: $(METAJSON)
 
 test: lint typecheck unittest
 
 typecheck:
-	@./run typecheck
+	@recipe/run_test.sh typecheck
 
 unittest:
-	@./run unittest
+	@recipe/run_test.sh unittest
 
 $(METAJSON): $(METADEPS)
 	condev-meta
