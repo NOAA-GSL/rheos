@@ -81,8 +81,6 @@ yamlfiles() {
 
 # Main entrypoint:
 
-test $# -eq 0 && echo "usage: $(basename $0) tool [args ...]" && exit 1
-
 if [[ -n "${1:-}" ]]; then
   # Run single tool:
   $1
