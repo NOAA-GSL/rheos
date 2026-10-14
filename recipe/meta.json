@@ -14,7 +14,6 @@
       "pytest-cov ==7.1.*",
       "pytest-mock ==3.16.*",
       "pytest-randomly ==5.0.*",
-      "pytest-xdist ==3.8.*",
       "python <3.16,==3.11,>=3.11",
       "ruff ==0.17.*",
       "setuptools",

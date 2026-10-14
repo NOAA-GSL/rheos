@@ -31,7 +31,6 @@ test:
     - pytest-cov 7.1.*
     - pytest-mock 3.16.*
     - pytest-randomly 5.0.*
-    - pytest-xdist 3.8.*
     - python {{ pymin }}
     - ruff 0.17.*
     - shellcheck 0.11.*
