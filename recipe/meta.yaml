@@ -1,3 +1,5 @@
+# yamllint disable-file
+
 {% set info = load_file_data("rheos/resources/info.json") %}
 {% set pymin = "3.11" %}
 
