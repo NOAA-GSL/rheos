@@ -7,15 +7,15 @@ all:
 	$(error Valid targets are: $(TARGETS))
 
 format:
-	@bin/run format
+	@./run format
 
 lint:
-	@bin/run lint
+	@./run lint
 
 test: lint typecheck unittest
 
 typecheck:
-	@bin/run typecheck
+	@./run typecheck
 
 unittest:
-	@bin/run unittest
+	@./run unittest
