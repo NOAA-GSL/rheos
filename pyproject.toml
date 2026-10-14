@@ -47,5 +47,9 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "src/rheos/tests/*" = [
-#  "ANN001",  # missing-type-function-argument
+  "ANN001", # missing-type-function-argument
+  "ANN201", # missing-return-type-undocumented-public-function
+  "ANN202", # missing-return-type-private-function
+  "S101",   # assert
+  "SLF001", # private-member-access
 ]
