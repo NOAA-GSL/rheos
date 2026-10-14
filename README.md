@@ -39,3 +39,4 @@ You will now be inside a shell with the `DEV-rheos` environment activate. Note t
 - Future invocations of `make devshell` will be much faster since the development environment will already exist.
 - If you make changes to files under `recipe/` and so need to rebuild the development environment, exit the shell, run `conda env remove -y -n DEV-rheos`, then run `make devshell` again. The `recipe/meta.json` file should be refreshed based on the current contents of `recipe/meta.yaml`, and you should commit these changes.
 - If you need multiple development environments, you can precede `make devshell` with `DEV_ENV_PREFIX=<name>`, e.g. `DEV_ENV_PREFIX=FOO` will create (or activate if already created) development environment `FOO-rheos`.
+- You can run `conda clean --all --yes` to reclaim disk space by purging unused cached packages.

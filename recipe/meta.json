@@ -1,0 +1,26 @@
+{
+  "build": "py_0",
+  "buildnum": 0,
+  "name": "rheos",
+  "packages": {
+    "dev": [
+      "docformatter ==1.7.*",
+      "jq ==1.8.*",
+      "mypy ==2.4.*",
+      "pip",
+      "pytest ==9.1.*",
+      "pytest-cov ==7.1.*",
+      "pytest-randomly ==5.0.*",
+      "pytest-xdist ==3.8.*",
+      "python <3.16,==3.11,>=3.11",
+      "ruff ==0.17.*",
+      "setuptools",
+      "uwtools >=2.21.0"
+    ],
+    "run": [
+      "python >=3.11,<3.16",
+      "uwtools >=2.21.0"
+    ]
+  },
+  "version": "0.0.1"
+}

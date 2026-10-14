@@ -5,17 +5,17 @@ set -aeuo pipefail
 # Tools:
 
 format() {
-#   msg Formatting JSON
-#   for f in $(jsfiles); do
-#     jq -S . $f >$f.new || (echo "    in $f" && rm $f.new && false)
-#     if cmp --quiet $f.new $f; then
-#       rm $f.new
-#     else
-#       mv $f.new $f
-#     fi
-#   done
-#   msg Formatting shell code
-#   shfmt --indent 2 --write $(shfiles)
+  msg Formatting JSON
+  for f in $(jsfiles); do
+    jq -S . $f >$f.new || (echo "    in $f" && rm $f.new && false)
+    if cmp --quiet $f.new $f; then
+      rm $f.new
+    else
+      mv $f.new $f
+    fi
+  done
+  msg Formatting shell code
+  shfmt --indent 2 --write $(shfiles)
   msg Formatting Python code
   ruff format $(pyfiles)
   msg Sorting Python imports
@@ -23,19 +23,13 @@ format() {
 }
 
 lint() {
-#   msg Linting YAML
-#   yamllint --no-warnings $(yamlfiles)
-#   msg Linting shell code
-#   shellcheck --format=gcc --severity=info --shell=bash $(shfiles)
+  msg Linting YAML
+  yamllint --no-warnings $(yamlfiles)
+  msg Linting shell code
+  shellcheck --format=gcc --severity=info --shell=bash $(shfiles)
   msg Linting Python code
   ruff check $(pyfiles)
 }
-
-# shfiles() {
-#   find $(rootdir) -path $(condadir) -prune -o -type f -print | sort | while read -r x; do
-#     file $x | grep -q "Bourne-Again shell script" && echo $x
-#   done | sort
-# }
 
 typecheck() {
   msg Typechecking Python code
@@ -49,25 +43,31 @@ unittest() {
 
 # Helpers:
 
-# jsfiles() {
-#   find $(rootdir) -path $(condadir) -prune -o -type f -name "*.json*" -print | sort
-# }
+jsfiles() {
+  find $(rootdir) -path $(condadir) -prune -o -type f -name "*.json*" -print | sort
+}
 
 msg() {
   echo "=> $*"
 }
 
 pyfiles() {
-  find $(rootdir) -path $(condadir) -prune -o -type f -name "*.py" -print | sort
+  find $(rootdir) -type f -name "*.py" -print | sort
 }
 
 rootdir() {
   readlink -f $(dirname $(dirname $0))
 }
 
-# yamlfiles() {
-#   find $(rootdir) -path $(condadir) -prune -o -type f -name "*.yaml" -print | sort | grep -v "^.*/aigfs.yaml$"
-# }
+shfiles() {
+  find $(rootdir) -path $(condadir) -prune -o -type f -print | sort | while read -r x; do
+    file $x | grep -q "Bourne-Again shell script" && echo $x
+  done | sort
+}
+
+yamlfiles() {
+  find $(rootdir) -path $(condadir) -prune -o -type f -name "*.yaml" -print | sort | grep -v "^.*/aigfs.yaml$"
+}
 
 # Main entrypoint:
 
