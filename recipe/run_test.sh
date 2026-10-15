@@ -81,6 +81,12 @@ yamlfiles() {
 
 # Main entrypoint:
 
+if [[ "${CONDEV_SHELL:-}" = 1 ]]; then
+  cd $(dirname $0)/..
+else
+  cd ../test_files
+fi
+
 if [[ -n "${1:-}" ]]; then
   # Run single tool:
   $1
