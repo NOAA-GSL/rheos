@@ -1,0 +1,54 @@
+import sys
+from argparse import ArgumentParser, HelpFormatter, Namespace
+from pathlib import Path
+
+from uwtools.api.logging import use_uwtools_logger
+
+from rheos.util import pkgname, version
+
+# Public
+
+
+def main() -> None:
+    args = _parse_args(sys.argv)
+    use_uwtools_logger(verbose=args.debug)
+
+
+# Private
+
+
+def _parse_args(argv: list[str]) -> Namespace:
+    parser = ArgumentParser(
+        description=pkgname,
+        add_help=False,
+        formatter_class=lambda prog: HelpFormatter(prog, max_help_position=6),
+    )
+    required = parser.add_argument_group("Required arguments")
+    required.add_argument(
+        "-c",
+        "--config",
+        help="Configuration file",
+        metavar="FILE",
+        type=Path,
+    )
+    optional = parser.add_argument_group("Optional arguments")
+    optional.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Log all messages",
+    )
+    optional.add_argument(
+        "-h",
+        "--help",
+        action="help",
+        help="Show help and exit",
+    )
+    optional.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        help="Show version and exit",
+        version=f"{Path(argv[0]).name} {version()}",
+    )
+    return parser.parse_args(argv[1:])

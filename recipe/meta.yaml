@@ -1,0 +1,40 @@
+# yamllint disable-file
+
+{% set info = load_file_data("rheos/resources/info.json") %}
+{% set pymin = "3.11" %}
+
+package:
+  name: rheos
+  version: {{ info["version"] }}
+source:
+  path: ../src
+build:
+  include_recipe: false
+  noarch: python
+  number: 0 # do not increment
+requirements:
+  host:
+    - pip
+    - python {{ pymin }}
+    - setuptools
+  run:
+    - python >={{ pymin }},<3.16
+    - uwtools >=2.21.0 # provides iotaa
+test:
+  requires:
+    - docformatter 1.7.* # 1.7.8 is buggy
+    - go-shfmt 3.14.*
+    - jq 1.8.*
+    - mypy 2.4.*
+    - pydantic 2.14.*
+    - pytest 9.1.*
+    - pytest-cov 7.1.*
+    - pytest-mock 3.16.*
+    - pytest-randomly 5.0.*
+    - python {{ pymin }}
+    - ruff 0.17.*
+    - shellcheck 0.11.*
+    - types-setuptools
+    - yamllint 1.38.*
+about:
+  license: APACHE
