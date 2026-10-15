@@ -52,7 +52,7 @@ do_not_install = ["python"]
 pkgs = meta["packages"]["run"]
 
 for k, v in conda_pypi_name_map.items():
-    pkgs = [re.sub(fr"^{k}\b", v, pkg) for pkg in pkgs]
+    pkgs = [re.sub(rf"^{k}\b", v, pkg) for pkg in pkgs]
 
 if not os.environ.get("CONDEV_SHELL"):
     kwargs["install_requires"] = [
