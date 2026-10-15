@@ -5,8 +5,10 @@ set -aeuo pipefail
 # Tools:
 
 cli() {
-  msg Testing CLI
-  rheos --version
+  if [[ ! -v CONDA_BUILD ]]; then
+    msg Testing CLI
+    rheos --version
+  fi
 }
 
 format() {
@@ -111,8 +113,8 @@ if [[ -n "${1:-}" ]]; then
   $1
 else
   # Run all tools:
+  cli
   lint
   typecheck
   unittest
-  cli
 fi

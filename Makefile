@@ -25,7 +25,8 @@ meta: $(METAJSON)
 package:
 	conda build $(CHANNELS) --error-overlinking --override-channels $(RECIPE_DIR)
 
-test: lint typecheck unittest
+test:
+	@recipe/run_test.sh
 
 typecheck:
 	@recipe/run_test.sh typecheck
