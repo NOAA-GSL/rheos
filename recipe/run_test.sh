@@ -66,6 +66,7 @@ pyfiles() {
 }
 
 shfiles() {
+  local x
   find . -type f -print | sort | while read -r x; do
     file $x | grep -q "Bourne-Again shell script" && echo $x
   done | sort
