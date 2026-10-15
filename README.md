@@ -25,12 +25,14 @@
     conda install -y maddenp::condev
     ```
 
-    If you cannot or do not want to install this package into your `base` environment, you can install it into a custom environment and proceed from there, e.g.
+    If you cannot or do not want to install this package into your `base` environment, you can install it into a custom environment, e.g.:
     
     ```
     conda create -y -n condev maddenp::condev
     conda activate condev
     ```
+    
+    Hereafter, activate this custom environment instead of `base` for `rheos` work.
 
 1. In the `rheos` git clone root, create and enter the development shell:
 
