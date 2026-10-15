@@ -1,7 +1,4 @@
 [tool.coverage.report]
-#exclude_also = [
-#  "if TYPE_CHECKING:"
-#]
 fail_under = 100
 show_missing = true
 skip_covered = true
@@ -23,11 +20,6 @@ check_untyped_defs = true
 pretty = true
 warn_return_any = true
 
-#[tool.pytest.ini_options]
-#filterwarnings = [
-#  "ignore:jsonschema.RefResolver is deprecated:DeprecationWarning"
-#]
-
 [tool.ruff]
 line-length = 100
 
@@ -46,7 +38,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"src/rheos/tests/*" = [
+"**/rheos/tests/*" = [
   "ANN001", # missing-type-function-argument
   "ANN201", # missing-return-type-undocumented-public-function
   "ANN202", # missing-return-type-private-function
