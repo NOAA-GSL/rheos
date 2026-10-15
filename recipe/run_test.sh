@@ -7,48 +7,63 @@ set -aeuo pipefail
 cli() {
   msg Testing CLI
   rheos --version
-  msg OK
 }
 
 format() {
-  msg Formatting JSON
-  for f in $(jsfiles); do
-    jq -S . $f >$f.new || (echo "    in $f" && rm $f.new && false)
-    if cmp --quiet $f.new $f; then
-      rm $f.new
-    else
-      mv $f.new $f
-    fi
-  done
-  msg Formatting shell code
-  shfmt --indent 2 --write $(shfiles)
-  msg Formatting Python code
-  ruff format $(pyfiles)
-  msg Sorting Python imports
-  ruff check --select I --fix $(pyfiles)
-  msg OK
+  local files
+  files=($(jsfiles))
+  if [[ ${#files[@]} -gt 0 ]]; then
+    msg Formatting JSON
+    for f in ${files[@]}; do
+      jq -S . $f >$f.new || (echo "    in $f" && rm $f.new && false)
+      if cmp --quiet $f.new $f; then
+        rm $f.new
+      else
+        mv $f.new $f
+      fi
+    done
+  fi
+  files=($(pyfiles))
+  if [[ ${#files[@]} -gt 0 ]]; then
+    msg Formatting Python code
+    ruff format ${files[@]}
+    msg Sorting Python imports
+    ruff check --select I --fix ${files[@]}
+  fi
+  files=($(shfiles))
+  if [[ ${#files[@]} -gt 0 ]]; then
+    msg Formatting shell code
+    shfmt --indent 2 --write ${files[@]}
+  fi
 }
 
 lint() {
-  msg Linting YAML
-  yamllint --no-warnings $(yamlfiles)
-  msg Linting shell code
-  shellcheck --format=gcc --severity=info --shell=bash $(shfiles)
-  msg Linting Python code
-  ruff check $(pyfiles)
-  msg OK
+  local files
+  files=($(pyfiles))
+  if [[ ${#files[@]} -gt 0 ]]; then
+    msg Linting Python code
+    ruff check ${files[@]}
+  fi
+  files=($(shfiles))
+  if [[ ${#files[@]} -gt 0 ]]; then
+    msg Linting shell code
+    shellcheck --format=gcc --severity=info --shell=bash ${files[@]}
+  fi
+  files=($(yamlfiles))
+  if [[ ${#files[@]} -gt 0 ]]; then
+    msg Linting YAML
+    yamllint --no-warnings ${files[@]}
+  fi
 }
 
 typecheck() {
   msg Typechecking Python code
   mypy $(pyfiles)
-  msg OK
 }
 
 unittest() {
   msg Running Python unit tests
   pytest --cov=rheos --cov-report=term-missing --ignore=conda/ .
-  msg OK
 }
 
 # Helpers:
@@ -68,7 +83,9 @@ pyfiles() {
 shfiles() {
   local x
   find . -type f -print | sort | while read -r x; do
-    file $x | grep -q "Bourne-Again shell script" && echo $x
+    if file $x | grep -q "Bourne-Again shell script"; then
+      echo $x
+    fi
   done | sort
 }
 
