@@ -45,14 +45,19 @@ elif os.environ.get("PYPI_PROJECT_NAME"):
     msg = "Required README not found: %s" % readme
     raise FileNotFoundError(msg)
 
-# Define dependency packages for non-devshell installs.
+# Define dependency packages for non-devshell installs, translating conda -> PyPI package names.
 
+conda_pypi_name_map = {"uwtools": "unified-workflow-tools"}
 do_not_install = ["python"]
+pkgs = meta["packages"]["run"]
+
+for k, v in conda_pypi_name_map.items():
+    pkgs = [re.sub(fr"^{k}\b", v, pkg) for pkg in pkgs]
 
 if not os.environ.get("CONDEV_SHELL"):
     kwargs["install_requires"] = [
         pkg.replace(" ==", "==")
-        for pkg in meta["packages"]["run"]
+        for pkg in pkgs
         if not any(re.match(rf"^{x} .*$", pkg) for x in do_not_install)
     ]
 
