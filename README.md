@@ -4,7 +4,7 @@
 
 ## Developer Setup
 
-1. If you do not already have a conda installation you want to reuse (not that you must be able to install packages into its `base` environment), install the [Miniforge](https://github.com/conda-forge/miniforge) conda appropriate for your system (Linux `aarch64` shown here), ideally not your git clone:
+1. If you do not already have a conda installation you want to reuse, install the [Miniforge](https://github.com/conda-forge/miniforge) conda appropriate for your system (Linux `aarch64` shown here), ideally not your git clone:
 
     ```
     wget https://github.com/conda-forge/miniforge/releases/download/26.7.2-0/Miniforge3-Linux-aarch64.sh
@@ -24,6 +24,15 @@
     ```
     conda install -y maddenp::condev
     ```
+
+    If you cannot or do not want to install this package into your `base` environment, you can install it into a custom environment, e.g.:
+    
+    ```
+    conda create -y -n condev maddenp::condev
+    conda activate condev
+    ```
+    
+    Hereafter, activate this custom environment instead of `base` for `rheos` work.
 
 1. In the `rheos` git clone root, create and enter the development shell:
 
