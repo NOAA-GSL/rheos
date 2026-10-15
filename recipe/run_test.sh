@@ -41,7 +41,7 @@ lint() {
 
 typecheck() {
   msg Typechecking Python code
-  MYPYPATH=$(rootdir)/drivers mypy $(pyfiles)
+  mypy $(pyfiles)
   msg OK
 }
 
@@ -54,7 +54,7 @@ unittest() {
 # Helpers:
 
 jsfiles() {
-  find $(rootdir) -type f -name "*.json*" -print | sort
+  find . -type f -name "*.json*" -print | sort
 }
 
 msg() {
@@ -62,29 +62,30 @@ msg() {
 }
 
 pyfiles() {
-  find $(rootdir) -type f -name "*.py" -print | sort
-}
-
-rootdir() {
-  readlink -f $(dirname $(dirname $0))
+  find . -type f -name "*.py" -print | sort
 }
 
 shfiles() {
-  find $(rootdir) -type f -print | sort | while read -r x; do
+  find . -type f -print | sort | while read -r x; do
     file $x | grep -q "Bourne-Again shell script" && echo $x
   done | sort
 }
 
 yamlfiles() {
-  find $(rootdir) -type f -name "*.yaml" -print | sort
+  find . -type f -name "*.yaml" -print | sort
 }
 
 # Main entrypoint:
 
-if [[ "${CONDEV_SHELL:-}" = 1 ]]; then
-  cd $(dirname $0)/..
-else
+if [[ ! -v CONDA_BUILD && ! -v CONDEV_SHELL ]]; then
+  msg Not in development shell or conda-build process
+  exit 1
+fi
+
+if [[ -v CONDA_BUILD ]]; then
   cd ../test_files
+else
+  cd $(dirname $0)/..
 fi
 
 if [[ -n "${1:-}" ]]; then
