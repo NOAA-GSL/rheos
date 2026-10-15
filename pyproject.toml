@@ -1,0 +1,47 @@
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = true
+
+[tool.coverage.run]
+branch = true
+
+[tool.docformatter]
+black = true
+in-place = true
+make-summary-multi-line = true
+pre-summary-newline = true
+recursive = true
+wrap-descriptions = 100
+wrap-summaries = 100
+
+[tool.mypy]
+check_untyped_defs = true
+pretty = true
+warn_return_any = true
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "COM812", # missing-trailing-comma
+  "CPY001", # missing-copyright-notice
+  "D100",   # undocumented-public-module
+  "D103",   # undocumented-public-function
+  "D104",   # undocumented-public-package
+  "D203",   # incorrect-blank-line-before-class
+  "D212",   # multi-line-summary-first-line
+  "TC006",  # runtime-cast-value
+  "UP031",  # printf-string-formatting
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/rheos/tests/*" = [
+  "ANN001", # missing-type-function-argument
+  "ANN201", # missing-return-type-undocumented-public-function
+  "ANN202", # missing-return-type-private-function
+  "S101",   # assert
+  "SLF001", # private-member-access
+]
