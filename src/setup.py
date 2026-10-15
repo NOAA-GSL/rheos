@@ -24,7 +24,6 @@ recipe = Path(os.environ.get("RECIPE_DIR", "../recipe"))
 metasrc = recipe / "meta.json"
 meta = json.loads(metasrc.read_text())
 name_conda = meta["name"]
-name_dist = os.environ.get("PYPI_PROJECT_NAME", name_conda)
 name_py = name_conda.replace("-", "_")
 readme = Path(__file__).resolve().parent.parent / "README.md"
 
@@ -34,7 +33,7 @@ kwargs = {
     "description": "TBD.",
     "entry_points": {"console_scripts": ["rheos = %s.cli:main" % name_py]},
     "include_package_data": True,
-    "name": name_dist,
+    "name": name_conda,
     "packages": find_packages(exclude=["%s.tests" % name_py], include=[name_py, "%s.*" % name_py]),
     "version": meta["version"],
 }
