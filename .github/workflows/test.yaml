@@ -9,18 +9,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  format-check:
-    name: Format Check
+  lint-check:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Install Conda
         run: .github/scripts/install-conda.sh
-      - name: Format Check
-        run: .github/scripts/format-check.sh
+      - name: Lint Check
+        run: .github/scripts/lint.sh
 
-  test-code-quality:
-    name: Test Code Quality (Python ${{ matrix.python-version }})
+  test-suite:
+    name: Suite (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -32,5 +32,5 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install Conda
         run: .github/scripts/install-conda.sh
-      - name: Test Code Quality
-        run: .github/scripts/test.sh
+      - name: Run Test Suite
+        run: .github/scripts/test-suite.sh

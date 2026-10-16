@@ -14,8 +14,11 @@ run_tests() {
   set -x
   git clean -dfx
   pip install --editable src # sets new Python version in entry-point scripts
-  make test
-  status=$?
+  if make cli && make typecheck && make unittest; then
+    status=0
+  else
+    status=$?
+  fi
   set +x
   conda deactivate
   return $status
