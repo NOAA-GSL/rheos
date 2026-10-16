@@ -2,8 +2,7 @@
 
 unformatted() {
   set -x
-  make format
-  check_for_diffs "UNFORMATTED CODE DETECTED"
+  make format && check_for_diffs "UNFORMATTED CODE DETECTED" && make lint
 }
 
 ci_conda_activate

@@ -1,6 +1,10 @@
 . $(dirname ${BASH_SOURCE[0]})/common.sh
 
 run_tests() {
+  if [[ ! -v PYTHON_VERSION ]]; then
+    echo "PYTHON_VERSION must be set" >&2
+    return 1
+  fi
   echo TESTING PYTHON $PYTHON_VERSION
   env=python-$PYTHON_VERSION
   devpkgs=$(jq .packages.dev[] recipe/meta.json | tr -d ' "')
@@ -10,17 +14,15 @@ run_tests() {
   set -x
   git clean -dfx
   pip install --editable src # sets new Python version in entry-point scripts
-  make test
-  status=$?
+  if make cli && make typecheck && make unittest; then
+    status=0
+  else
+    status=$?
+  fi
   set +x
   conda deactivate
   return $status
 }
 
-SUPPORTED_PYTHON_VERSIONS=( 3.11 3.12 3.13 3.14 3.15 )
-
 ci_conda_activate
-for version in ${SUPPORTED_PYTHON_VERSIONS[*]}; do
-  PYTHON_VERSION=$version
-  CONDEV_SHELL_CMD=run_tests condev-shell
-done
+CONDEV_SHELL_CMD=run_tests condev-shell
