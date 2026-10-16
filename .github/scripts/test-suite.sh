@@ -1,7 +1,7 @@
 . $(dirname ${BASH_SOURCE[0]})/common.sh
 
 run_tests() {
-  if [[ -z ${PYTHON_VERSION:-} ]]; then
+  if [[ ! -v PYTHON_VERSION ]]; then
     echo "PYTHON_VERSION must be set" >&2
     return 1
   fi
