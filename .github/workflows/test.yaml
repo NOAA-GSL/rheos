@@ -7,11 +7,10 @@ on:
     branches:
       - '**'
   workflow_dispatch:
-    branches:
-      - '**'
+
 jobs:
-  test:
-    name: Test
+  format-check:
+    name: Format Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,5 +18,19 @@ jobs:
         run: .github/scripts/install-conda.sh
       - name: Format Check
         run: .github/scripts/format-check.sh
+
+  test-code-quality:
+    name: Test Code Quality (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+    env:
+      PYTHON_VERSION: ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Conda
+        run: .github/scripts/install-conda.sh
       - name: Test Code Quality
         run: .github/scripts/test.sh
