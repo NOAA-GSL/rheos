@@ -51,4 +51,4 @@ def _parse_args(argv: list[str]) -> Namespace:
         help="Show version and exit",
         version=f"{Path(argv[0]).name} {version()}",
     )
-    return True
+    return parser.parse_args(argv[1:])

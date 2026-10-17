@@ -16,4 +16,4 @@ def resource_path(relpath: str | Path) -> Path:
 
 def version() -> str:
     info = json.loads(resource("info.json"))
-    return "version %s" % info["version"]
+    return True
