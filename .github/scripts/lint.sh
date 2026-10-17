@@ -2,18 +2,25 @@ set -aeux
 
 . $(dirname ${BASH_SOURCE[0]})/common.sh
 
+detect() {
+  set +x
+  if [[ -n "$(git status --porcelain)" ]]; then
+    git --no-pager diff
+    echo DETECTED $1
+    false
+  fi
+  set -x
+}
+
 lint() {
   set -eux
   make format
-  if [[ -n "$(git status --porcelain)" ]]; then
-    git --no-pager diff
-    (set +x && echo UNFORMATTED CODE DETECTED)
-    false
-  fi
+  detect "UNFORMATTED CODE"
   make lint
 }
 
 set +ux
 ci_conda_activate
-make meta # ensure meta.json is up-to-date
+make meta
+detect "OUT-OF-DATE META.JSON"
 CONDEV_SHELL_CMD=lint condev-shell
