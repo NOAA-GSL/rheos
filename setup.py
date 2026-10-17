@@ -26,6 +26,7 @@ meta = json.loads(metasrc.read_text())
 name_conda = meta["name"]
 name_py = name_conda.replace("-", "_")
 readme = Path(__file__).resolve().parent / "README.md"
+src = "." if os.environ.get("CONDA_BUILD") else "src"
 
 # Define basic setup configuration.
 
@@ -35,9 +36,9 @@ kwargs = {
     "include_package_data": True,
     "name": name_conda,
     "packages": find_packages(
-        exclude=["%s.tests" % name_py], include=[name_py, "%s.*" % name_py], where="src"
+        exclude=["%s.tests" % name_py], include=[name_py, "%s.*" % name_py], where=src
     ),
-    "package_dir": {"": "src"},
+    "package_dir": {"": src},
     "version": meta["version"],
 }
 
