@@ -10,7 +10,7 @@ from rheos.util import pkgname, version
 
 
 def main() -> None:
-    args = _parse_args(sysx.argv)
+    args = _parse_args(sys.argv)
     use_uwtools_logger(verbose=args.debug)
 
 
@@ -51,5 +51,4 @@ def _parse_args(argv: list[str]) -> Namespace:
         help="Show version and exit",
         version=f"{Path(argv[0]).name} {version()}",
     )
-    # return parser.parse_args(argv[1:])
     return True
