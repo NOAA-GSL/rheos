@@ -4,18 +4,16 @@ set -aeux
 
 run_tests() {
   set -eux
+  channels=$(xargs -d "\n" -I@ echo --channel @ <recipe/channels)
   devpkgs=$(jq .packages.dev[] recipe/meta.json | tr -d ' "')
-  set +ux
-  conda create --yes --name rheos --quiet $devpkgs
-  conda activate rheos
-  conda install --yes python=$PYTHON_VERSION
-  set -ux
+  notrace conda create --yes --name rheos --quiet $channels $devpkgs
+  notrace conda activate rheos
+  notrace conda install --yes $channels python=$PYTHON_VERSION
   git clean -dfx
   pip install --editable src
   make cli
   make typecheck
   make unittest
-  set +x
 }
 
 if [[ ! -v PYTHON_VERSION ]]; then

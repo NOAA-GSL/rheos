@@ -7,3 +7,9 @@ ci_conda_activate() {
   . $CI_CONDA_SH
   conda activate
 }
+
+notrace() {
+  set +ux
+  $*
+  set -ux
+}
