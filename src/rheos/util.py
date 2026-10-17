@@ -11,7 +11,10 @@ def resource(relpath: str | Path) -> str:
 
 
 def resource_path(relpath: str | Path) -> Path:
-    return cast(Path, resources.files(f"{pkgname}.resources").joinpath(str(relpath)))
+    return cast(
+        Path,
+        resources.files(f"{pkgname}.resources").joinpath(str(relpath))
+    )
 
 
 def version() -> str:
