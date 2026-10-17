@@ -14,5 +14,6 @@ lint() {
 }
 
 set +ux
+make meta # ensure meta.json is up-to-date
 ci_conda_activate
 CONDEV_SHELL_CMD=lint condev-shell

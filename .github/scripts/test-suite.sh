@@ -2,7 +2,7 @@ set -aeux
 
 . $(dirname ${BASH_SOURCE[0]})/common.sh
 
-run_tests() {
+test_suite() {
   set -eux
   notrace conda install --yes python=$PYTHON_VERSION
   make cli
@@ -17,4 +17,4 @@ fi
 
 set +ux
 ci_conda_activate
-CONDEV_SHELL_CMD=run_tests condev-shell
+CONDEV_SHELL_CMD=test_suite condev-shell
