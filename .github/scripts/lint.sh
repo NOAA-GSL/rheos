@@ -1,9 +1,22 @@
+set -aeux
+
 . $(dirname ${BASH_SOURCE[0]})/common.sh
 
-unformatted() {
-  set -x
-  make format && check_for_diffs "UNFORMATTED CODE DETECTED" && make lint
+detect() {
+  test -z "$(git status --porcelain)" && return 0
+  git --no-pager diff
+  echo "ERROR: Detected $*"
+  return 1
 }
 
-ci_conda_activate
-CONDEV_SHELL_CMD=unformatted condev-shell
+lint() {
+  set -eux
+  make format
+  notrace detect "unformatted code"
+  make lint
+}
+
+notrace ci_conda_activate
+make meta
+notrace detect "out-of-date recipe/meta.json"
+CONDEV_SHELL_CMD=lint notrace condev-shell

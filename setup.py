@@ -20,21 +20,25 @@ from setuptools import find_packages, setup
 
 # Collect package metadata.
 
-recipe = Path(os.environ.get("RECIPE_DIR", "../recipe"))
+recipe = Path(os.environ.get("RECIPE_DIR", "recipe"))
 metasrc = recipe / "meta.json"
 meta = json.loads(metasrc.read_text())
 name_conda = meta["name"]
 name_py = name_conda.replace("-", "_")
-readme = Path(__file__).resolve().parent.parent / "README.md"
+readme = Path(__file__).resolve().parent / "README.md"
+src = "." if os.environ.get("CONDA_BUILD") else "src"
 
 # Define basic setup configuration.
 
 kwargs = {
-    "description": "TBD.",
+    "description": "TBD",
     "entry_points": {"console_scripts": ["rheos = %s.cli:main" % name_py]},
     "include_package_data": True,
     "name": name_conda,
-    "packages": find_packages(exclude=["%s.tests" % name_py], include=[name_py, "%s.*" % name_py]),
+    "packages": find_packages(
+        exclude=["%s.tests" % name_py], include=[name_py, "%s.*" % name_py], where=src
+    ),
+    "package_dir": {"": src},
     "version": meta["version"],
 }
 
