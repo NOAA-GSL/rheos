@@ -5,6 +5,7 @@ set -aeux
 test_suite() {
   set -eux
   notrace conda install --yes python=$PYTHON_VERSION
+  pip install --editable src # corrects Python version in entry-point script
   make cli
   make typecheck
   make unittest
