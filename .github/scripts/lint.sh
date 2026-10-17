@@ -7,7 +7,7 @@ detect() {
   if [[ -n "$(git status --porcelain)" ]]; then
     git --no-pager diff
     echo ERROR: Detected $1
-    false
+    return 1
   fi
   set -x
 }
