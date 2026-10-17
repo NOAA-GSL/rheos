@@ -3,7 +3,7 @@ set -aeux
 . $(dirname ${BASH_SOURCE[0]})/common.sh
 
 detect() {
-  test -z "$(git status --porcelain)" ]] && return 0
+  test -z "$(git status --porcelain)" && return 0
   git --no-pager diff
   echo "ERROR: Detected $*"
   return 1

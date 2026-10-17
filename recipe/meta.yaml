@@ -17,6 +17,7 @@ requirements:
     - pip
     - python {{ pymin }}
     - setuptools
+    - xarray
   run:
     - python >={{ pymin }},<3.16
     - uwtools >=2.21.0 # provides iotaa
