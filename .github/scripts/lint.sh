@@ -5,7 +5,7 @@ set -aeux
 detect() {
   if [[ -n "$(git status --porcelain)" ]]; then
     git --no-pager diff
-    echo ERROR: Detected $1
+    echo "ERROR: Detected $1"
     return 1
   fi
 }

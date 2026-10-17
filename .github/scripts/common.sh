@@ -10,6 +10,6 @@ ci_conda_activate() {
 
 notrace() {
   set +ux
-  $*
+  "$*"
   set -ux
 }
