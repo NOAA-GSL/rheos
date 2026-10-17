@@ -6,7 +6,7 @@ detect() {
   set +x
   if [[ -n "$(git status --porcelain)" ]]; then
     git --no-pager diff
-    echo DETECTED $1
+    echo ERROR: Detected $1
     false
   fi
   set -x
@@ -15,12 +15,12 @@ detect() {
 lint() {
   set -eux
   make format
-  detect "UNFORMATTED CODE"
+  detect "unformatted code: Run 'make format' to fix"
   make lint
 }
 
 set +ux
 ci_conda_activate
 make meta
-detect "OUT-OF-DATE META.JSON"
+detect "out-of-date recipe/meta.json: Run 'make meta' to fix"
 CONDEV_SHELL_CMD=lint condev-shell
