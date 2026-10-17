@@ -6,9 +6,8 @@ run_tests() {
   set -eux
   channels=$(xargs -d "\n" -I@ echo --channel @ <recipe/channels)
   devpkgs=$(jq .packages.dev[] recipe/meta.json | tr -d ' "')
-  notrace conda create --yes --name rheos --quiet $channels $devpkgs
+  notrace conda create --yes --name rheos --quiet $channels $devpkgs python=$PYTHON_VERSION
   notrace conda activate rheos
-  notrace conda install --yes $channels python=$PYTHON_VERSION
   git clean -dfx
   pip install --editable src
   make cli
