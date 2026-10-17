@@ -3,11 +3,10 @@ set -aeux
 . $(dirname ${BASH_SOURCE[0]})/common.sh
 
 detect() {
-  if [[ -n "$(git status --porcelain)" ]]; then
-    git --no-pager diff
-    echo "ERROR: Detected $*"
-    return 1
-  fi
+  test -z "$(git status --porcelain)" ]] && return 0
+  git --no-pager diff
+  echo "ERROR: Detected $*"
+  return 1
 }
 
 lint() {

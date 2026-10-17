@@ -18,11 +18,7 @@ def main() -> None:
 
 
 def _parse_args(argv: list[str]) -> Namespace:
-    parser = ArgumentParser(
-        description=pkgname,
-        add_help=False,
-        formatter_class=lambda prog: HelpFormatter(prog, max_help_position=6),
-    )
+    parser = ArgumentParser(description=pkgname, add_help=False, formatter_class=lambda prog: HelpFormatter(prog, max_help_position=6))
     required = parser.add_argument_group("Required arguments")
     required.add_argument(
         "-c",
@@ -51,4 +47,5 @@ def _parse_args(argv: list[str]) -> Namespace:
         help="Show version and exit",
         version=f"{Path(argv[0]).name} {version()}",
     )
-    return parser.parse_args(argv[1:])
+    # return parser.parse_args(argv[1:])
+    return True

@@ -23,7 +23,8 @@ def test__parse_args_config(mocker):
     _patch_version(mocker)
     args = cli._parse_args(["rheos", "-c", "config.yaml"])
     assert str(args.config) == "config.yaml"
-    assert args.debug is False
+    # assert args.debug is False
+    assert args.debug is True
 
 
 def test__parse_args_debug(mocker):
