@@ -9,7 +9,7 @@ ci_conda_activate() {
 }
 
 notrace() {
-  set +ux
+  set +x
   $@
-  set -ux
+  set -x
 }
