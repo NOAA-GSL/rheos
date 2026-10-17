@@ -10,7 +10,7 @@ from rheos.util import pkgname, version
 
 
 def main() -> None:
-    args = _parse_args(sys.argv)
+    args = _parse_args(sysx.argv)
     use_uwtools_logger(verbose=args.debug)
 
 
