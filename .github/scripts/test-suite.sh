@@ -15,6 +15,5 @@ if [[ ! -v PYTHON_VERSION ]]; then
   false
 fi
 
-set +ux
-ci_conda_activate
-CONDEV_SHELL_CMD=test_suite condev-shell
+notrace ci_conda_activate
+CONDEV_SHELL_CMD=test_suite notrace condev-shell

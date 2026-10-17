@@ -6,6 +6,5 @@ url=https://github.com/conda-forge/miniforge/releases/download/26.7.2-0/Miniforg
 installer=/tmp/$(basename $url)
 wget --no-verbose -O $installer $url
 bash $installer -bfp $CI_CONDA_DIR
-set +ux
-ci_conda_activate
+notrace ci_conda_activate
 notrace conda install --quiet --yes --repodata-fn repodata.json jq maddenp::condev # anaconda-client python-build
