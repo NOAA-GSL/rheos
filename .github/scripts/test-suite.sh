@@ -4,12 +4,7 @@ set -aeux
 
 run_tests() {
   set -eux
-  channels=$(xargs -d "\n" -I@ echo --channel @ <recipe/channels)
-  devpkgs=$(jq .packages.dev[] recipe/meta.json | tr -d ' "')
-  notrace conda create --yes --name rheos --quiet $channels $devpkgs python=$PYTHON_VERSION
-  notrace conda activate rheos
-  git clean -dfx
-  pip install --editable src
+  notrace conda install --yes python=$PYTHON_VERSION
   make cli
   make typecheck
   make unittest
@@ -17,7 +12,7 @@ run_tests() {
 
 if [[ ! -v PYTHON_VERSION ]]; then
   echo "PYTHON_VERSION must be set" >&2
-  return 1
+  false
 fi
 
 set +ux
