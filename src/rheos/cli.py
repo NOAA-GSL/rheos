@@ -18,7 +18,11 @@ def main() -> None:
 
 
 def _parse_args(argv: list[str]) -> Namespace:
-    parser = ArgumentParser(description=pkgname, add_help=False, formatter_class=lambda prog: HelpFormatter(prog, max_help_position=6))
+    parser = ArgumentParser(
+        description=pkgname,
+        add_help=False,
+        formatter_class=lambda prog: HelpFormatter(prog, max_help_position=6),
+    )
     required = parser.add_argument_group("Required arguments")
     required.add_argument(
         "-c",
