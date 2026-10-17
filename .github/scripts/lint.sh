@@ -1,9 +1,18 @@
+set -aeux
+
 . $(dirname ${BASH_SOURCE[0]})/common.sh
 
-unformatted() {
-  set -x
-  make format && check_for_diffs "UNFORMATTED CODE DETECTED" && make lint
+lint() {
+  set -eux
+  make format
+  if [[ -n "$(git status --porcelain)" ]]; then
+    git --no-pager diff
+    (set +x && echo UNFORMATTED CODE DETECTED)
+    false
+  fi
+  make lint
 }
 
+set +ux
 ci_conda_activate
-CONDEV_SHELL_CMD=unformatted condev-shell
+CONDEV_SHELL_CMD=lint condev-shell

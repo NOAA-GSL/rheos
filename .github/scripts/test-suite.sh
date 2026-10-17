@@ -1,28 +1,28 @@
+set -aeux
+
 . $(dirname ${BASH_SOURCE[0]})/common.sh
 
 run_tests() {
-  if [[ ! -v PYTHON_VERSION ]]; then
-    echo "PYTHON_VERSION must be set" >&2
-    return 1
-  fi
-  echo TESTING PYTHON $PYTHON_VERSION
-  env=python-$PYTHON_VERSION
+  set -eux
   devpkgs=$(jq .packages.dev[] recipe/meta.json | tr -d ' "')
-  conda create --yes --name $env --quiet $devpkgs
-  conda activate $env
+  set +ux
+  conda create --yes --name rheos --quiet $devpkgs
+  conda activate rheos
   conda install --yes python=$PYTHON_VERSION
-  set -x
+  set -ux
   git clean -dfx
-  pip install --editable src # sets new Python version in entry-point scripts
-  if make cli && make typecheck && make unittest; then
-    status=0
-  else
-    status=$?
-  fi
+  pip install --editable src
+  make cli
+  make typecheck
+  make unittest
   set +x
-  conda deactivate
-  return $status
 }
 
+if [[ ! -v PYTHON_VERSION ]]; then
+  echo "PYTHON_VERSION must be set" >&2
+  return 1
+fi
+
+set +ux
 ci_conda_activate
 CONDEV_SHELL_CMD=run_tests condev-shell
