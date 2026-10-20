@@ -1,0 +1,36 @@
+name: Test
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  lint-check:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Conda
+        run: .github/scripts/install-conda.sh
+      - name: Lint Check
+        run: .github/scripts/lint.sh
+
+  test-suite:
+    name: Suite (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    env:
+      PYTHON_VERSION: ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Conda
+        run: .github/scripts/install-conda.sh
+      - name: Run Test Suite
+        run: .github/scripts/test-suite.sh
