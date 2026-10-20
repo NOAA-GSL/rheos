@@ -5,7 +5,7 @@ set -aeuo pipefail
 # Tools:
 
 cli() {
-  if [[ ! -v CONDA_BUILD ]]; then
+  if [[ -z ${CONDA_BUILD:-} ]]; then
     msg Testing CLI
     rheos --version
   fi
@@ -97,12 +97,7 @@ yamlfiles() {
 
 # Main entrypoint:
 
-if [[ ! -v CONDA_BUILD && ! -v CONDEV_SHELL ]]; then
-  msg Not in development shell or conda-build process
-  exit 1
-fi
-
-if [[ -v CONDA_BUILD ]]; then
+if [[ -n ${CONDA_BUILD:-} ]]; then
   cd ../test_files
 else
   cd $(dirname $0)/..
