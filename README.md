@@ -52,7 +52,7 @@ You will now be inside a shell with the `DEV-rheos` environment activate. Note t
 
 ## Developer Setup (pip)
 
-1. Using Python 3.11 through 3.15, create a virtual environment outside the git clone:
+1. Using Python 3.11 through 3.14, create a virtual environment outside the git clone:
 
     ```bash
     python -m venv ~/.venvs/rheos-dev

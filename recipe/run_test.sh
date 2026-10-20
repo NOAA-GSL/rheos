@@ -97,6 +97,17 @@ yamlfiles() {
 
 # Main entrypoint:
 
+if [[ ! -v CONDA_BUILD && ! -v CONDEV_SHELL ]]; then
+  for tool in mypy pytest ruff shellcheck shfmt yamllint; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+      msg "Missing development tool: $tool"
+      msg "Activate the conda development shell or your Python virtual environment."
+      msg "For pip-based development, run: python -m pip install -e '.[dev]'"
+      exit 1
+    fi
+  done
+fi
+
 if [[ -v CONDA_BUILD ]]; then
   cd ../test_files
 else
