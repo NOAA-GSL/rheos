@@ -2,7 +2,7 @@
 
 ## This repository is in active development.
 
-## Developer Setup
+## Developer Setup (conda)
 
 1. If you do not already have a conda installation you want to reuse, install the [Miniforge](https://github.com/conda-forge/miniforge) conda appropriate for your system (Linux `aarch64` shown here), ideally not your git clone:
 
@@ -73,8 +73,8 @@ You will now be inside a shell with the `DEV-rheos` environment activate. Note t
 ### Important Notes
 
 - The code under `src/rheos` is live-linked into the environment, so source changes take immediate effect.
-- The `make cli`, `make lint`, `make test`, `make typecheck`, and `make unittest` targets work without conda.
-- The `make format` target additionally requires the `jq` command-line executable to be installed separately; pip does not install it.
-- The `make devshell`, `make meta`, and `make package` targets remain conda-based workflows and are not supported by the pip-only setup. Use the checked-in `recipe/meta.json` for pip installs.
+- The `make cli`, `make lint`, `make test`, `make typecheck`, and `make unittest` targets are fully supported.
+- The `make format` target is also fully supported if the `jq` command-line executable is on the path or is installed separately; pip does not install it.
+- The `make devshell`, `make meta`, and `make package` targets remain conda-based workflows and are not supported by the pip-only setup.
 - Keep the virtual environment outside the git clone so formatting and test tools do not scan its installed packages.
 - Run `deactivate` to leave the virtual environment. Activate it again before returning to development.

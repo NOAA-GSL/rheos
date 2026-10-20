@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -aeuo pipefail
 
 # Tools:
 
 cli() {
-  if [[ -z ${CONDA_BUILD:-} ]]; then
+  if [[ ! -v CONDA_BUILD ]]; then
     msg Testing CLI
     rheos --version
   fi
@@ -97,7 +97,7 @@ yamlfiles() {
 
 # Main entrypoint:
 
-if [[ -n ${CONDA_BUILD:-} ]]; then
+if [[ -v CONDA_BUILD ]]; then
   cd ../test_files
 else
   cd $(dirname $0)/..
