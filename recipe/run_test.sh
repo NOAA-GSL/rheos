@@ -5,7 +5,7 @@ set -aeuo pipefail
 # Tools:
 
 cli() {
-  if [[ ! -v CONDA_BUILD ]]; then
+  if [[ -z ${CONDA_BUILD:-} ]]; then
     msg Testing CLI
     rheos --version
   fi
