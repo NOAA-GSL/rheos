@@ -74,7 +74,7 @@ typecheck() {
 
 unittest() {
   msg Running Python unit tests
-  pytest --cov=rheos --cov-report=term-missing --ignore=conda/ .
+  pytest --cov --cov-report=term-missing .
 }
 
 # Helpers:
