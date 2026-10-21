@@ -9,6 +9,16 @@ on:
   workflow_dispatch:
 
 jobs:
+  conda-package:
+    name: Conda Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Conda
+        run: .github/scripts/install-conda.sh
+      - name: Build and Test Conda Package
+        run: .github/scripts/conda-package.sh
+
   lint-check:
     name: Lint
     runs-on: ubuntu-latest
