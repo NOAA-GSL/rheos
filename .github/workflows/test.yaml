@@ -57,7 +57,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Build and Test Python Distributions
-        run: .github/scripts/pip-package.sh
+        run: make pip-package
 
   test-suite:
     name: Suite (Python ${{ matrix.python-version }})
