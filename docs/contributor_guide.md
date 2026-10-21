@@ -91,7 +91,7 @@ API documentation for the `rheos` Python module is generated from source-code do
 make docs
 ```
 
-Output is written to `docs/api/`, which is excluded from version control. Open `docs/api/index.html` in a browser to preview the API documentation. CI builds the API documentation on pushes to `main` and publishes it through GitHub Pages when Pages is enabled for the repository.
+Output is written to `docs/api/`, which is excluded from version control. Open `docs/api/index.html` in a browser to preview the API documentation. CI builds the API documentation for pull requests and pushes to all branches. Pushes to `main` publish it through GitHub Pages when Pages is enabled for the repository.
 
 ## Fork and PR Model
 
