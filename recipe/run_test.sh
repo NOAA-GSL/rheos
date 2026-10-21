@@ -11,6 +11,14 @@ cli() {
   fi
 }
 
+docs() {
+  local outdir
+  outdir=$PWD/docs/api
+  msg Building documentation in $outdir
+  PYTHONWARNINGS="ignore:Error parsing type annotation" pdoc --output-directory $outdir src/rheos
+  msg Built documentation in $outdir
+}
+
 format() {
   local files
   files=($(jsfiles))

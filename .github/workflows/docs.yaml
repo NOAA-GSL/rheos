@@ -1,0 +1,32 @@
+name: Build and Publish API Docs
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  docs:
+    name: Build and Publish API Docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Conda
+        run: .github/scripts/install-conda.sh
+      - name: Build API Docs
+        run: CONDEV_SHELL_CMD='make docs' condev-shell
+      - name: Upload Pages Artifact
+        if: github.event.repository.has_pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/api/
+      - name: Deploy to GitHub Pages
+        if: github.event.repository.has_pages
+        id: deployment
+        uses: actions/deploy-pages@v4

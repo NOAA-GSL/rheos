@@ -26,6 +26,7 @@ test:
     - go-shfmt 3.14.*
     - jq 1.8.*
     - mypy 2.4.*
+    - pdoc 16.0.*
     - pydantic 2.14.*
     - pytest 9.1.*
     - pytest-cov 7.1.*
