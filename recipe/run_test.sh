@@ -17,7 +17,8 @@ format() {
   if [[ ${#files[@]} -gt 0 ]]; then
     msg Formatting JSON
     for f in ${files[@]}; do
-      jq -S . $f >$f.new || (echo "    in $f" && rm $f.new && false)
+      python -m json.tool --sort-keys --indent 2 --no-ensure-ascii "$f" >"$f.new" ||
+        (echo "    in $f" && rm "$f.new" && false)
       if cmp --quiet $f.new $f; then
         rm $f.new
       else

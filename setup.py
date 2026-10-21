@@ -62,7 +62,7 @@ pkgs = meta["packages"]["run"]
 
 def pypi_dev_requirement(conda_requirement: str) -> str | None:
     name = conda_requirement.split(maxsplit=1)[0]
-    if name in {"jq", "pip", "python", "setuptools"}:
+    if name in {"pip", "python", "setuptools"}:
         return None
     if name == "go-shfmt":
         conda_requirement = f"{name} ==4.2.0"

@@ -73,8 +73,7 @@ You will now be inside a shell with the `DEV-rheos` environment activate. Note t
 ### Important Notes
 
 - The code under `src/rheos` is live-linked into the environment, so source changes take immediate effect.
-- The `make cli`, `make lint`, `make test`, `make typecheck`, and `make unittest` targets are fully supported.
-- The `make format` target is also fully supported if the `jq` command-line executable is on the path or is installed separately; pip does not install it.
+- The `make cli`, `make format`, `make lint`, `make test`, `make typecheck`, and `make unittest` targets are fully supported.
 - The `make devshell`, `make meta`, and `make package` targets remain conda-based workflows and are not supported by the pip-only setup.
 - Keep the virtual environment outside the git clone so formatting and test tools do not scan its installed packages.
 - Run `deactivate` to leave the virtual environment. Activate it again before returning to development.
