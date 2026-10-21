@@ -35,10 +35,9 @@ kwargs = {
     "entry_points": {"console_scripts": ["rheos = %s.cli:main" % name_py]},
     "include_package_data": True,
     "name": name_conda,
-    "packages": find_packages(
-        exclude=["%s.tests" % name_py], include=[name_py, "%s.*" % name_py], where=src
-    ),
+    "package_data": {"%s.resources" % name_py: ["info.json"]},
     "package_dir": {"": src},
+    "packages": find_packages(where=src),
     "version": meta["version"],
 }
 

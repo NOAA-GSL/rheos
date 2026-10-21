@@ -9,4 +9,4 @@ rm -fr $dst
 mkdir -pv $dst
 mv -v $PKG_NAME $dst/
 ln -sv $dst/$PKG_NAME
-cp -v $root/{pyproject.toml,.shellcheckrc,.yamllint.yaml} $dst/
+cp -rv $root/{.shellcheckrc,.yamllint.yaml,pyproject.toml,tests} $dst/
