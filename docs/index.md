@@ -1,7 +1,7 @@
 # rheos
 
-> **⚠️ Work in Progress**
-> Rheos is under active development and is not yet ready for use.
+> [!WARNING]
+> Rheos is under active development. It is incomplete and may undergo significant breaking changes without notice.
 
 ## Documentation
 
