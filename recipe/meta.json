@@ -6,7 +6,6 @@
     "dev": [
       "docformatter ==1.7.*",
       "go-shfmt ==3.14.*",
-      "jq ==1.8.*",
       "mypy ==2.4.*",
       "pip",
       "pydantic ==2.14.*",

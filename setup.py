@@ -51,9 +51,25 @@ elif os.environ.get("PYPI_PROJECT_NAME"):
 
 # Define dependency packages for non-devshell installs, translating conda -> PyPI package names.
 
-conda_pypi_name_map = {"uwtools": "unified-workflow-tools"}
+conda_pypi_name_map = {
+    "go-shfmt": "shfmt-py",
+    "shellcheck": "shellcheck-py",
+    "uwtools": "unified-workflow-tools",
+}
 do_not_install = ["python"]
 pkgs = meta["packages"]["run"]
+
+
+def pypi_dev_requirement(conda_requirement: str) -> str | None:
+    name = conda_requirement.split(maxsplit=1)[0]
+    if name in {"pip", "python", "setuptools"}:
+        return None
+    if name == "go-shfmt":
+        conda_requirement = f"{name} ==4.2.0"
+    for conda_name, pypi_name in conda_pypi_name_map.items():
+        conda_requirement = re.sub(rf"^{conda_name}\b", pypi_name, conda_requirement)
+    return conda_requirement.replace(" ==", "==")
+
 
 for k, v in conda_pypi_name_map.items():
     pkgs = [re.sub(rf"^{k}\b", v, pkg) for pkg in pkgs]
@@ -64,6 +80,13 @@ if not os.environ.get("CONDEV_SHELL"):
         for pkg in pkgs
         if not any(re.match(rf"^{x} .*$", pkg) for x in do_not_install)
     ]
+    kwargs["extras_require"] = {
+        "dev": [
+            requirement
+            for pkg in meta["packages"]["dev"]
+            if (requirement := pypi_dev_requirement(pkg)) is not None
+        ]
+    }
 
 # Install.
 
