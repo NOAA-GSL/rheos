@@ -108,7 +108,7 @@ Use the following command regularly while developing and before opening or updat
 make format && make test
 ```
 
-Formatting runs first because it can identify syntax problems that prevent later checks from running and can change reported line numbers. Linting provides a quick check for errors and anti-patterns, type checking validates Python interfaces, and unit tests check behavior after the earlier checks pass. CI checks formatting and linting, validates the editable pip development install, and runs the test suite on Python 3.11 through 3.14 for pull requests and pushes.
+Formatting runs first because it can identify syntax problems that prevent later checks from running and can change reported line numbers. Linting provides a quick check for errors and anti-patterns, type checking validates Python interfaces, and unit tests check behavior after the earlier checks pass. CI checks formatting and linting, builds and tests the Conda package, validates the editable pip development install, and runs the test suite on Python 3.11 through 3.14 for pull requests and pushes.
 
 ## API Documentation
 
