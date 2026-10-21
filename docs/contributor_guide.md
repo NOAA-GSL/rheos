@@ -8,7 +8,8 @@ Welcome to the `rheos` Contributor Guide. Please familiarize yourself with and f
 
 ## Table of Contents
 
-- [Developer Setup](#developer-setup)
+- [Developer Setup (conda)](#developer-setup-conda)
+- [Developer Setup (pip)](#developer-setup-pip)
 - [Code Quality](#code-quality)
 - [API Documentation](#api-documentation)
 - [Fork and PR Model](#fork-and-pr-model)
@@ -17,7 +18,7 @@ Welcome to the `rheos` Contributor Guide. Please familiarize yourself with and f
   - [Merging](#merging)
   - [Need Help?](#need-help)
 
-## Developer Setup
+## Developer Setup (conda)
 
 Rheos development uses a conda environment managed by [condev](https://anaconda.org/channels/maddenp/packages/condev/overview). If an existing, writable conda installation is not available, install a [Miniforge](https://github.com/conda-forge/miniforge) distribution appropriate for the development system. Install Miniforge outside the Rheos clone when possible.
 
@@ -57,13 +58,41 @@ To use a different development-environment name, set `DEV_ENV_PREFIX` when invok
 DEV_ENV_PREFIX=feature make devshell
 ```
 
+## Developer Setup (pip)
+
+1. Using Python 3.11 through 3.14, create a virtual environment outside the git clone:
+
+    ```bash
+    python -m venv ~/.venvs/rheos-dev
+    ```
+
+2. Activate the virtual environment:
+
+    ```bash
+    source ~/.venvs/rheos-dev/bin/activate
+    ```
+
+3. In the `rheos` git clone root, install the project and its development tools:
+
+    ```bash
+    python -m pip install -e '.[dev]'
+    ```
+
+### Important Notes
+
+- The code under `src/rheos` is live-linked into the environment, so source changes take immediate effect.
+- The `make cli`, `make docs`, `make format`, `make lint`, `make test`, `make typecheck`, and `make unittest` targets are fully supported.
+- The `make devshell`, `make meta`, and `make package` targets remain conda-based workflows and are not supported by the pip-only setup.
+- Keep the virtual environment outside the git clone so formatting and test tools do not scan its installed packages.
+- Run `deactivate` to leave the virtual environment. Activate it again before returning to development.
+
 ## Code Quality
 
-Run the following targets from an active development shell:
+Run the following targets from an active conda development shell or pip virtual environment:
 
 | Target | Description |
 | --- | --- |
-| `make format` | Formats Python with [ruff](https://docs.astral.sh/ruff/), JSON with [jq](https://jqlang.org/), and Bash with [go-shfmt](https://github.com/mvdan/sh). |
+| `make format` | Formats Python with [ruff](https://docs.astral.sh/ruff/), JSON with Python, and Bash with [go-shfmt](https://github.com/mvdan/sh). |
 | `make lint` | Lints Python with [ruff](https://docs.astral.sh/ruff/), Bash with [shellcheck](https://www.shellcheck.net/), and YAML with [yamllint](https://yamllint.readthedocs.io/). |
 | `make typecheck` | Typechecks Python with [mypy](https://mypy.readthedocs.io/). |
 | `make unittest` | Runs unit tests and reports coverage with [pytest](https://docs.pytest.org/) and [coverage](https://coverage.readthedocs.io/). |
@@ -79,13 +108,13 @@ Use the following command regularly while developing and before opening or updat
 make format && make test
 ```
 
-Formatting runs first because it can identify syntax problems that prevent later checks from running and can change reported line numbers. Linting provides a quick check for errors and anti-patterns, type checking validates Python interfaces, and unit tests check behavior after the earlier checks pass. CI runs linting and the test suite for pull requests and pushes, including a Python 3.11 through 3.14 test matrix.
+Formatting runs first because it can identify syntax problems that prevent later checks from running and can change reported line numbers. Linting provides a quick check for errors and anti-patterns, type checking validates Python interfaces, and unit tests check behavior after the earlier checks pass. CI checks formatting and linting, validates the editable pip development install, and runs the test suite on Python 3.11 through 3.14 for pull requests and pushes.
 
 ## API Documentation
 
 Rheos API reference material is generated from Python source docstrings. Public modules, classes, functions, and methods should therefore have accurate, useful docstrings that describe their purpose, parameters, return values, side effects, and exceptions where applicable. Keep docstrings and type annotations synchronized with implementation changes.
 
-API documentation for the `rheos` Python module is generated from source-code docstrings with [pdoc](https://pdoc.dev/). Build it locally from an active development shell:
+API documentation for the `rheos` Python module is generated from source-code docstrings with [pdoc](https://pdoc.dev/). Build it locally from an active conda development shell or pip virtual environment:
 
 ```bash
 make docs
@@ -103,7 +132,7 @@ Contributions to Rheos use the GitHub [fork](https://docs.github.com/en/pull-req
 1. [Clone](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project) the fork onto the development system.
 1. Create an issue to discuss the proposed change before starting work.
 1. [Create a branch](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project#creating-a-branch-to-work-on) for the change.
-1. Make, commit, and push changes to the branch. Follow the [Developer Setup](#developer-setup) and [Code Quality](#code-quality) guidance.
+1. Make, commit, and push changes to the branch. Follow the [Developer Setup (conda)](#developer-setup-conda) or [Developer Setup (pip)](#developer-setup-pip) and [Code Quality](#code-quality) guidance.
 1. [Create a pull request](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project#making-a-pull-request) to merge the branch into the main repository.
 
 For future contributions, either recreate the fork or configure the official repository as an [upstream remote](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-repository-for-a-fork) and [sync the fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork).
