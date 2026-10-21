@@ -24,20 +24,20 @@ Rheos development uses a conda environment managed by [condev](https://anaconda.
 
 Activate the `base` environment of the conda installation, then install `condev`:
 
-```bash
+```text
 conda install -y maddenp::condev
 ```
 
 `condev` may instead be installed in a dedicated environment. Activate that environment rather than `base` before working on Rheos:
 
-```bash
+```text
 conda create -y -n condev maddenp::condev
 conda activate condev
 ```
 
 From the root of a Rheos clone, create and enter the development shell:
 
-```bash
+```text
 make devshell
 ```
 
@@ -45,7 +45,7 @@ The development shell activates the `DEV-rheos` environment. The code under `src
 
 Subsequent `make devshell` invocations reuse the existing environment. If changes to `recipe/` require rebuilding it, exit the development shell, remove the environment, and create it again:
 
-```bash
+```text
 conda env remove -y -n DEV-rheos
 make devshell
 ```
@@ -54,7 +54,7 @@ make devshell
 
 To use a different development-environment name, set `DEV_ENV_PREFIX` when invoking the target:
 
-```bash
+```text
 DEV_ENV_PREFIX=feature make devshell
 ```
 
@@ -62,19 +62,19 @@ DEV_ENV_PREFIX=feature make devshell
 
 1. Using Python 3.11 through 3.14, create a virtual environment outside the git clone:
 
-    ```bash
+    ```text
     python -m venv ~/.venvs/rheos-dev
     ```
 
 2. Activate the virtual environment:
 
-    ```bash
+    ```text
     source ~/.venvs/rheos-dev/bin/activate
     ```
 
 3. In the `rheos` git clone root, install the project and its development tools:
 
-    ```bash
+    ```text
     python -m pip install -e '.[dev]'
     ```
 
@@ -116,7 +116,7 @@ Rheos API reference material is generated from Python source docstrings. Public 
 
 API documentation for the `rheos` Python module is generated from source-code docstrings with [pdoc](https://pdoc.dev/). Build it locally from an active conda development shell or pip virtual environment:
 
-```bash
+```text
 make docs
 ```
 
