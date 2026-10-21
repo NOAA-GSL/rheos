@@ -104,7 +104,7 @@ Configuration for these tools is in `pyproject.toml`, `.shellcheckrc`, and `.yam
 
 Use the following command regularly while developing and before opening or updating a pull request:
 
-```bash
+```text
 make format && make test
 ```
 
