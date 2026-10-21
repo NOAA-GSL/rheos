@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -aeuo pipefail
 
@@ -25,7 +25,8 @@ format() {
   if [[ ${#files[@]} -gt 0 ]]; then
     msg Formatting JSON
     for f in ${files[@]}; do
-      jq -S . $f >$f.new || (echo "    in $f" && rm $f.new && false)
+      python -m json.tool --sort-keys --indent 2 --no-ensure-ascii "$f" >"$f.new" ||
+        (echo "    in $f" && rm "$f.new" && false)
       if cmp --quiet $f.new $f; then
         rm $f.new
       else
@@ -106,8 +107,14 @@ yamlfiles() {
 # Main entrypoint:
 
 if [[ ! -v CONDA_BUILD && ! -v CONDEV_SHELL ]]; then
-  msg Not in development shell or conda-build process
-  exit 1
+  for tool in mypy pytest ruff shellcheck shfmt yamllint; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+      msg "Missing development tool: $tool"
+      msg "Activate the conda development shell or your Python virtual environment."
+      msg "For pip-based development, run: python -m pip install -e '.[dev]'"
+      exit 1
+    fi
+  done
 fi
 
 if [[ -v CONDA_BUILD ]]; then
