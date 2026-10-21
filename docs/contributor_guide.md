@@ -20,7 +20,7 @@ Welcome to the `rheos` Contributor Guide. Please familiarize yourself with and f
 
 ## Developer Setup (conda)
 
-Rheos development uses a conda environment managed by [condev](https://anaconda.org/channels/maddenp/packages/condev/overview). If an existing, writable conda installation is not available, install a [Miniforge](https://github.com/conda-forge/miniforge) distribution appropriate for the development system. Install Miniforge outside the Rheos clone when possible.
+`rheos` development uses a conda environment managed by [condev](https://anaconda.org/channels/maddenp/packages/condev/overview). If an existing, writable conda installation is not available, install a [Miniforge](https://github.com/conda-forge/miniforge) distribution appropriate for the development system. Install Miniforge outside the `rheos` clone when possible.
 
 Activate the `base` environment of the conda installation, then install `condev`:
 
@@ -28,20 +28,20 @@ Activate the `base` environment of the conda installation, then install `condev`
 conda install -y maddenp::condev
 ```
 
-`condev` may instead be installed in a dedicated environment. Activate that environment rather than `base` before working on Rheos:
+`condev` may instead be installed in a dedicated environment. Activate that environment rather than `base` before working on `rheos`:
 
 ```text
 conda create -y -n condev maddenp::condev
 conda activate condev
 ```
 
-From the root of a Rheos clone, create and enter the development shell:
+From the root of a `rheos` clone, create and enter the development shell:
 
 ```text
 make devshell
 ```
 
-The development shell activates the `DEV-rheos` environment. The code under `src/rheos` is installed in editable mode, so source changes take effect immediately. It also provides Rheos's runtime dependencies and code-quality tools. Exit the shell to return to the previously active shell.
+The development shell activates the `DEV-rheos` environment. The code under `src/rheos` is installed in editable mode, so source changes take effect immediately. It also provides `rheos`'s runtime dependencies and code-quality tools. Exit the shell to return to the previously active shell.
 
 Subsequent `make devshell` invocations reuse the existing environment. If changes to `recipe/` require rebuilding it, exit the development shell, remove the environment, and create it again:
 
@@ -100,7 +100,7 @@ Run the following targets from an active conda development shell or pip virtual 
 | `make docs` | Builds HTML API documentation with [pdoc](https://pdoc.dev/) into `docs/api/`. |
 | `make test` | Runs the CLI check, linting, type checking, and unit tests. |
 
-Configuration for these tools is in `pyproject.toml`, `.shellcheckrc`, and `.yamllint.yaml` at the repository root. Rheos requires 100% branch coverage; `make unittest` enforces the configured coverage threshold.
+Configuration for these tools is in `pyproject.toml`, `.shellcheckrc`, and `.yamllint.yaml` at the repository root. `rheos` requires 100% branch coverage; `make unittest` enforces the configured coverage threshold.
 
 Use the following command regularly while developing and before opening or updating a pull request:
 
@@ -112,7 +112,7 @@ Formatting runs first because it can identify syntax problems that prevent later
 
 ## API Documentation
 
-Rheos API reference material is generated from Python source docstrings. Public modules, classes, functions, and methods should therefore have accurate, useful docstrings that describe their purpose, parameters, return values, side effects, and exceptions where applicable. Keep docstrings and type annotations synchronized with implementation changes.
+`rheos` API reference material is generated from Python source docstrings. Public modules, classes, functions, and methods should therefore have accurate, useful docstrings that describe their purpose, parameters, return values, side effects, and exceptions where applicable. Keep docstrings and type annotations synchronized with implementation changes.
 
 API documentation for the `rheos` Python module is generated from source-code docstrings with [pdoc](https://pdoc.dev/). Build it locally from an active conda development shell or pip virtual environment:
 
@@ -126,9 +126,9 @@ Output is written to `docs/api/`, which is excluded from version control. Open `
 
 ### Overview
 
-Contributions to Rheos use the GitHub [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks) and [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) model:
+Contributions to `rheos` use the GitHub [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks) and [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) model:
 
-1. [Fork](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project#forking-a-repository) the [Rheos repository](https://github.com/NOAA-GSL/rheos) into a personal GitHub account.
+1. [Fork](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project#forking-a-repository) the [`rheos` repository](https://github.com/NOAA-GSL/rheos) into a personal GitHub account.
 1. [Clone](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project) the fork onto the development system.
 1. Create an issue to discuss the proposed change before starting work.
 1. [Create a branch](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project#creating-a-branch-to-work-on) for the change.
@@ -151,7 +151,7 @@ Code owners are automatically requested for review. Address review comments by c
 
 ### Merging
 
-A pull request is ready to merge when required reviews and required CI checks have passed, and any outstanding review conversations have been resolved. These statuses appear at the bottom of the pull request's _Conversation_ tab. Contributors with write access may merge an eligible pull request; otherwise, a Rheos core developer will merge it.
+A pull request is ready to merge when required reviews and required CI checks have passed, and any outstanding review conversations have been resolved. These statuses appear at the bottom of the pull request's _Conversation_ tab. Contributors with write access may merge an eligible pull request; otherwise, a `rheos` core developer will merge it.
 
 ### Need Help?
 
