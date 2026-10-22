@@ -57,6 +57,7 @@ To use a different development-environment name, set `DEV_ENV_PREFIX` when invok
 ```text
 DEV_ENV_PREFIX=feature make devshell
 ```
+This will create a development environment called `feature-rheos`.
 
 ## Developer Setup (pip)
 
