@@ -4,7 +4,7 @@ CHANNELS := $(addprefix -c ,$(shell tr '\n' ' ' <$(RECIPE_DIR)/channels)) -c loc
 METADEPS := $(addprefix $(RECIPE_DIR)/,meta.yaml) src/rheos/resources/info.json
 METAJSON := $(RECIPE_DIR)/meta.json
 SHELL    := $(shell which bash)
-TARGETS  := cli devshell docs format lint meta package pip-package test typecheck unittest
+TARGETS  := cli devshell docs format lint meta package pypi-package test typecheck unittest
 
 .PHONY: $(TARGETS)
 
@@ -31,8 +31,8 @@ meta: $(METAJSON)
 package:
 	conda build $(CHANNELS) --error-overlinking --override-channels $(RECIPE_DIR)
 
-pip-package:
-	@.github/scripts/pip-package.sh
+pypi-package:
+	@.github/scripts/pypi-package.sh
 
 test:
 	@recipe/run_test.sh

@@ -1,7 +1,7 @@
 set -aeux
 
 if [[ -v CONDA_BUILD || -v CONDEV_SHELL ]]; then
-  echo "ERROR: Run make pip-package outside condev-shell and conda-build." >&2
+  echo "ERROR: Run make pypi-package outside condev-shell and conda-build." >&2
   exit 1
 fi
 
