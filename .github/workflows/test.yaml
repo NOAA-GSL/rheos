@@ -47,6 +47,18 @@ jobs:
       - name: Run Tests
         run: make test
 
+  pypi-package:
+    name: PyPI Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build and Test PyPI Package
+        run: make pypi-package
+
   test-suite:
     name: Suite (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
