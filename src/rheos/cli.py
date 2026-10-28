@@ -1,10 +1,17 @@
 import sys
 from argparse import ArgumentParser, HelpFormatter, Namespace
+from importlib import import_module
 from pathlib import Path
+from typing import Any, NoReturn
 
 from uwtools.api.logging import use_uwtools_logger
 
 from rheos.util import pkgname, version
+
+# Mapping of modes (rheos.api modules) to actions (functions in those modules):
+MODES = {
+    "config": ["compose", "extract", "list"],
+}
 
 # Public
 
@@ -12,32 +19,40 @@ from rheos.util import pkgname, version
 def main() -> None:
     args = _parse_args(sys.argv)
     use_uwtools_logger(verbose=args.debug)
+    getattr(import_module(f"{pkgname}.api.{args.mode}"), args.action)()
 
 
 # Private
 
 
-def _parse_args(argv: list[str]) -> Namespace:
-    parser = ArgumentParser(
-        description=pkgname,
-        add_help=False,
-        formatter_class=lambda prog: HelpFormatter(prog, max_help_position=6),
-    )
-    required = parser.add_argument_group("Required arguments")
-    required.add_argument(
-        "-c",
-        "--config",
-        help="Configuration file",
-        metavar="FILE",
-        type=Path,
-    )
+class _Parser(ArgumentParser):
+    """An ArgumentParser listing available choices (modes or actions) in its help and errors."""
+
+    def __init__(self, *args: Any, choices: list[str], label: str, **kwargs: Any) -> None:  # noqa: ANN401
+        kwargs.setdefault("add_help", False)
+        kwargs.setdefault("formatter_class", _formatter)
+        super().__init__(*args, **kwargs)
+        self.choices = choices
+        self.label = label
+
+    def error(self, message: str) -> NoReturn:
+        self.print_help(sys.stderr)
+        self.exit(2, f"\n{self.prog}: error: {message}\n")
+
+    def format_help(self) -> str:
+        lines = [f"Available {self.label}:", *[f"  {x}" for x in self.choices], ""]
+        return super().format_help() + "\n" + "\n".join(lines)
+
+
+def _add_common_args(parser: ArgumentParser, argv0: str, debug: bool = False) -> None:  # noqa: FBT001,FBT002
     optional = parser.add_argument_group("Optional arguments")
-    optional.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        help="Log all messages",
-    )
+    if debug:
+        optional.add_argument(
+            "-d",
+            "--debug",
+            action="store_true",
+            help="Log all messages",
+        )
     optional.add_argument(
         "-h",
         "--help",
@@ -49,6 +64,30 @@ def _parse_args(argv: list[str]) -> Namespace:
         "--version",
         action="version",
         help="Show version and exit",
-        version=f"{Path(argv[0]).name} {version()}",
+        version=f"{Path(argv0).name} {version()}",
     )
-    return parser.parse_args(argv[1:])
+
+
+def _formatter(prog: str) -> HelpFormatter:
+    return HelpFormatter(prog, max_help_position=6)
+
+
+def _parse_args(argv: list[str]) -> Namespace:
+    parser = _Parser(description=pkgname, choices=list(MODES), label="modes")
+    _add_common_args(parser, argv[0])
+    modes = parser.add_subparsers(dest="mode", metavar="MODE", parser_class=_Parser, required=True)
+    for mode, actions in MODES.items():
+        mode_parser = modes.add_parser(mode, choices=actions, label="actions")
+        _add_common_args(mode_parser, argv[0])
+        actions_subparsers = mode_parser.add_subparsers(
+            dest="action", metavar="ACTION", parser_class=ArgumentParser, required=True
+        )
+        for action in actions:
+            action_parser = actions_subparsers.add_parser(
+                action, add_help=False, formatter_class=_formatter
+            )
+            _add_common_args(action_parser, argv[0], debug=True)
+    args = argv[1:]
+    if not args or (len(args) == 1 and args[0] in MODES):
+        args.append("--help")
+    return parser.parse_args(args)
