@@ -27,6 +27,12 @@ name_conda = meta["name"]
 name_py = name_conda.replace("-", "_")
 readme = Path(__file__).resolve().parent / "README.md"
 src = "." if os.environ.get("CONDA_BUILD") else "src"
+resources = Path(src, name_py, "resources")
+resource_files = sorted(
+    str(path.relative_to(resources))
+    for path in resources.rglob("*")
+    if path.is_file() and path.suffix not in {".py", ".pyc"} and "__pycache__" not in path.parts
+)
 
 # Define basic setup configuration.
 
@@ -35,7 +41,7 @@ kwargs = {
     "entry_points": {"console_scripts": ["rheos = %s.cli:main" % name_py]},
     "include_package_data": True,
     "name": name_conda,
-    "package_data": {"%s.resources" % name_py: ["info.json"]},
+    "package_data": {"%s.resources" % name_py: resource_files},
     "package_dir": {"": src},
     "packages": find_packages(where=src),
     "version": meta["version"],
