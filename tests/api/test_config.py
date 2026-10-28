@@ -11,12 +11,13 @@ def test_catalog():
 
 
 @pytest.fixture
-def configs(tmp_path):
-    a = tmp_path / "a.yaml"
-    a.write_text("a: 1\nb: '{{ a }}'\n")
-    b = tmp_path / "b.yaml"
-    b.write_text("c: 2\n")
-    return [str(a), str(b)]
+def configs(mocker, tmp_path):
+    # Mock the resource root, since test configs cannot be added to the installed package.
+    mocker.patch.object(config, "_root", return_value=tmp_path)
+    (tmp_path / "a.yaml").write_text("a: 1\nb: '{{ a }}'\n")
+    (tmp_path / "x" / "y").mkdir(parents=True)
+    (tmp_path / "x" / "y" / "b.yaml").write_text("c: 2\n")
+    return ["a.yaml", "x/y/b.yaml"]
 
 
 @pytest.mark.parametrize(
@@ -56,6 +57,15 @@ def test_ls(capsys):
 def test_show(capsys, key_path):
     config.show(key_path)
     assert capsys.readouterr().out == resource_path(Path("config", key_path)).read_text()
+
+
+@pytest.mark.parametrize("key_path", ["base.yaml", "platform/ursa.yaml"])
+def test__node(key_path):
+    assert config._node(key_path).read_text() == resource_path(Path("config", key_path)).read_text()
+
+
+def test__root():
+    assert {x.name for x in config._root().iterdir()} >= {"base.yaml", "platform", "workflow"}
 
 
 def test__walk(tmp_path):

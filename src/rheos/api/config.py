@@ -1,4 +1,5 @@
 import os
+from contextlib import ExitStack
 from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
@@ -15,33 +16,36 @@ def catalog() -> list[str]:
     Catalog available config resources as slash-separated paths relative to the config resources
     root.
     """
-    return sorted(_walk(resources.files(f"{pkgname}.resources.config"), []))
+    return sorted(_walk(_root(), []))
 
 
 def compose(configs: list[str], *, quiet: bool = False, realize: bool = False) -> Config:
     """
-    Compose the given configs, writing the result to stdout unless quiet.
+    Compose the config resources at the given slash-separated key paths, writing the result to
+    stdout unless quiet.
     """
-    if quiet:
-        return uw_compose(configs, output_file=Path(os.devnull), realize=realize)
-    return uw_compose(configs, realize=realize)
+    with ExitStack() as stack:
+        paths = [stack.enter_context(resources.as_file(_node(config))) for config in configs]
+        if quiet:
+            return uw_compose(paths, output_file=Path(os.devnull), realize=realize)
+        return uw_compose(paths, realize=realize)
 
 
 def compose_to_dict(configs: list[str]) -> dict:
     """
-    Compose the given configs and return the result as a dict.
+    Compose the config resources at the given slash-separated key paths and return the result as a
+    dict.
     """
-    return uw_compose_to_dict(configs)
+    with ExitStack() as stack:
+        paths = [stack.enter_context(resources.as_file(_node(config))) for config in configs]
+        return uw_compose_to_dict(paths)
 
 
 def extract(key_path: list[str]) -> str:
     """
     Return the text of the config resource at the given key path.
     """
-    node = resources.files(f"{pkgname}.resources.config")
-    for key in key_path:
-        node = node / key
-    return node.read_text()
+    return _node("/".join(key_path)).read_text()
 
 
 def ls() -> None:
@@ -60,6 +64,23 @@ def show(key_path: str) -> None:
 
 
 # Private
+
+
+def _node(key_path: str) -> Traversable:
+    """
+    Return the config resource at the given slash-separated key path.
+    """
+    node = _root()
+    for key in key_path.split("/"):
+        node = node / key
+    return node
+
+
+def _root() -> Traversable:
+    """
+    Return the root of the config resources.
+    """
+    return resources.files(f"{pkgname}.resources.config")
 
 
 def _walk(node: Traversable, parts: list[str]) -> list[str]:

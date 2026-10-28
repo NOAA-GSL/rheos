@@ -5,7 +5,7 @@ from importlib import import_module
 import pytest
 
 from rheos import cli
-from rheos.util import resource, resource_path
+from rheos.util import resource
 
 
 @pytest.mark.parametrize(
@@ -13,8 +13,8 @@ from rheos.util import resource, resource_path
     [
         (
             "compose",
-            {"configs": [str(resource_path("config/base.yaml"))], "realize": False},
-            resource("config/base.yaml"),
+            {"configs": ["base.yaml", "platform/ursa.yaml"], "realize": False},
+            resource("config/platform/ursa.yaml"),
         ),
         ("ls", {}, "platform/ursa.yaml"),
         (
