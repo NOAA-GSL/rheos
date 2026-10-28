@@ -34,7 +34,7 @@ def test_modes(mode, actions):
 
 
 def _patch_version(mocker):
-    mocker.patch.object(cli, "version", return_value="version 1.2.3 build 4")
+    mocker.patch.object(cli, "_version", return_value="version 1.2.3 build 4")
 
 
 @pytest.mark.parametrize(
@@ -102,3 +102,8 @@ def test__parse_args_exit(argv, mocker):
     with pytest.raises(SystemExit) as e:
         cli._parse_args(["rheos", *argv])
     assert e.value.code == 0
+
+
+def test__version(mocker):
+    mocker.patch.object(cli, "resource", return_value='{"version": "1.2.3", "buildnum": "4"}')
+    assert cli._version() == "version 1.2.3"

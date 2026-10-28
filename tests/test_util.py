@@ -20,8 +20,3 @@ def test_resource_path(relpath):
     path = util.resource_path(relpath)
     assert path.name == "info.json"
     assert path.is_file()
-
-
-def test_version(mocker):
-    mocker.patch.object(util, "resource", return_value='{"version": "1.2.3", "buildnum": "4"}')
-    assert util.version() == "version 1.2.3"

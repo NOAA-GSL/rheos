@@ -1,3 +1,4 @@
+import json
 import sys
 from argparse import ArgumentParser, HelpFormatter, Namespace
 from importlib import import_module
@@ -6,7 +7,7 @@ from typing import Any, NoReturn
 
 from uwtools.api.logging import use_uwtools_logger
 
-from rheos.util import pkgname, version
+from rheos.util import pkgname, resource
 
 # Mapping of modes (rheos.api modules) to actions, and of actions to functions in those modules
 # plus their positional arguments (names mapped to help strings):
@@ -74,7 +75,7 @@ def _add_common_args(parser: ArgumentParser, argv0: str, debug: bool = False) ->
         "--version",
         action="version",
         help="Show version and exit",
-        version=f"{Path(argv0).name} {version()}",
+        version=f"{Path(argv0).name} {_version()}",
     )
 
 
@@ -105,3 +106,8 @@ def _parse_args(argv: list[str]) -> Namespace:
     if not args or (len(args) == 1 and args[0] in MODES):
         args.append("--help")
     return parser.parse_args(args)
+
+
+def _version() -> str:
+    info = json.loads(resource("info.json"))
+    return "version %s" % info["version"]
