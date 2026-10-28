@@ -4,6 +4,7 @@ from importlib.resources.abc import Traversable
 from pathlib import Path
 
 from uwtools.api.config import compose as uw_compose
+from uwtools.api.config import compose_to_dict as uw_compose_to_dict
 from uwtools.config.formats.base import Config
 
 from rheos.util import pkgname
@@ -30,7 +31,7 @@ def compose_to_dict(configs: list[str]) -> dict:
     """
     Compose the given configs and return the result as a dict.
     """
-    return compose(configs, quiet=True).data
+    return uw_compose_to_dict(configs)
 
 
 def extract(key_path: list[str]) -> str:
