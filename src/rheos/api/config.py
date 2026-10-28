@@ -1,8 +1,6 @@
-import os
 from contextlib import ExitStack
 from importlib import resources
 from importlib.resources.abc import Traversable
-from pathlib import Path
 
 from uwtools.api.config import compose as uw_compose
 from uwtools.api.config import compose_to_dict as uw_compose_to_dict
@@ -19,15 +17,13 @@ def catalog() -> list[str]:
     return sorted(_walk(_root(), []))
 
 
-def compose(configs: list[str], *, quiet: bool = False, realize: bool = False) -> Config:
+def compose(configs: list[str], *, realize: bool = False) -> Config:
     """
     Compose the config resources at the given slash-separated key paths, writing the result to
-    stdout unless quiet.
+    stdout.
     """
     with ExitStack() as stack:
         paths = [stack.enter_context(resources.as_file(_node(config))) for config in configs]
-        if quiet:
-            return uw_compose(paths, output_file=Path(os.devnull), realize=realize)
         return uw_compose(paths, realize=realize)
 
 

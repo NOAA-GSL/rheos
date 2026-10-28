@@ -24,15 +24,10 @@ def configs(mocker, tmp_path):
     ("realize", "b"),
     [(False, "{{ a }}"), (True, "1")],
 )
-@pytest.mark.parametrize("quiet", [False, True])
-def test_compose(b, capsys, configs, quiet, realize):
-    result = config.compose(configs, quiet=quiet, realize=realize)
+def test_compose(b, capsys, configs, realize):
+    result = config.compose(configs, realize=realize)
     assert result.data == {"a": 1, "b": b, "c": 2}
-    out = capsys.readouterr().out
-    if quiet:
-        assert not out
-    else:
-        assert "c: 2" in out
+    assert "c: 2" in capsys.readouterr().out
 
 
 def test_compose_to_dict(capsys, configs):
