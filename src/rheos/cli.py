@@ -13,8 +13,8 @@ from rheos.util import pkgname, version
 MODES: dict[str, dict[str, tuple[str, dict[str, str]]]] = {
     "config": {
         "compose": ("compose", {}),
-        "extract": ("extract_to_stdout", {"key_path": "Slash-separated path to config resource"}),
         "ls": ("ls_to_stdout", {}),
+        "show": ("show_to_stdout", {"key_path": "Slash-separated path to config resource"}),
     },
 }
 

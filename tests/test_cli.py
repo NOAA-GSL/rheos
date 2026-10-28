@@ -11,8 +11,8 @@ from rheos import cli
     ("action", "extra", "expected"),
     [
         ("compose", {}, "rheos.api.config.compose() called"),
-        ("extract", {"key_path": "platform/ursa.yaml"}, "{}"),
         ("ls", {}, "platform/ursa.yaml"),
+        ("show", {"key_path": "platform/ursa.yaml"}, "{}"),
     ],
 )
 def test_main(action, capsys, expected, extra, mocker):
@@ -38,7 +38,7 @@ def _patch_version(mocker):
 
 
 @pytest.mark.parametrize(
-    ("action", "positionals"), [("compose", []), ("extract", ["a/b.yaml"]), ("ls", [])]
+    ("action", "positionals"), [("compose", []), ("ls", []), ("show", ["a/b.yaml"])]
 )
 @pytest.mark.parametrize("debug", [[], ["-d"], ["--debug"]])
 def test__parse_args(action, debug, mocker, positionals):
@@ -55,7 +55,7 @@ def test__parse_args(action, debug, mocker, positionals):
 def test__parse_args_missing_positional(capsys, code, mocker):
     _patch_version(mocker)
     with pytest.raises(SystemExit) as e:
-        cli._parse_args(["rheos", "config", "extract"])
+        cli._parse_args(["rheos", "config", "show"])
     assert e.value.code == code
     assert "KEY_PATH" in capsys.readouterr().err
 

@@ -11,23 +11,6 @@ def compose() -> None:
     print("rheos.api.config.compose() called")
 
 
-def extract(key_path: list[str]) -> str:
-    """
-    Return the text of the config resource at the given key path.
-    """
-    node = resources.files(f"{pkgname}.resources.config")
-    for key in key_path:
-        node = node / key
-    return node.read_text()
-
-
-def extract_to_stdout(key_path: str) -> None:
-    """
-    Print the text of the config resource at the given slash-separated key path.
-    """
-    print(extract(key_path.split("/")), end="")
-
-
 def ls() -> list[str]:
     """
     List available config resources as slash-separated paths relative to the config resources root.
@@ -41,6 +24,23 @@ def ls_to_stdout() -> None:
     """
     for line in ls():
         print(line)
+
+
+def show(key_path: list[str]) -> str:
+    """
+    Return the text of the config resource at the given key path.
+    """
+    node = resources.files(f"{pkgname}.resources.config")
+    for key in key_path:
+        node = node / key
+    return node.read_text()
+
+
+def show_to_stdout(key_path: str) -> None:
+    """
+    Print the text of the config resource at the given slash-separated key path.
+    """
+    print(show(key_path.split("/")), end="")
 
 
 # Private
