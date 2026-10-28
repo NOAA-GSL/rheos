@@ -5,6 +5,7 @@ from importlib import import_module
 import pytest
 
 from rheos import cli
+from rheos.util import resource
 
 
 @pytest.mark.parametrize(
@@ -12,7 +13,11 @@ from rheos import cli
     [
         ("compose", {}, "rheos.api.config.compose() called"),
         ("ls", {}, "platform/ursa.yaml"),
-        ("show", {"key_path": "platform/ursa.yaml"}, "{}"),
+        (
+            "show",
+            {"key_path": "platform/ursa.yaml"},
+            resource("config/platform/ursa.yaml"),
+        ),
     ],
 )
 def test_main(action, capsys, expected, extra, mocker):
