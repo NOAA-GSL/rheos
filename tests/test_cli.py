@@ -12,7 +12,7 @@ from rheos import cli
     [
         ("compose", "rheos.api.config.compose() called"),
         ("extract", "rheos.api.config.extract() called"),
-        ("list", "platform.ursa.yaml"),
+        ("list", "platform/ursa.yaml"),
     ],
 )
 def test_main(action, capsys, expected, mocker):

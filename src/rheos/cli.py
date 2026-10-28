@@ -13,7 +13,7 @@ MODES = {
     "config": {
         "compose": "compose",
         "extract": "extract",
-        "list": "list_to_log",
+        "list": "list_to_stdout",
     },
 }
 

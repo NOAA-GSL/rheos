@@ -21,12 +21,12 @@ def extract() -> None:
 
 def list() -> builtins.list[str]:  # noqa: A001
     """
-    List available config resources as dotted strings relative to the config resources root.
+    List available config resources as slash-separated paths relative to the config resources root.
     """
     return sorted(_walk(resources.files(f"{pkgname}.resources.config"), []))
 
 
-def list_to_log() -> None:
+def list_to_stdout() -> None:
     """
     Print available config resources, one per line.
     """
@@ -39,7 +39,7 @@ def list_to_log() -> None:
 
 def _walk(node: Traversable, parts: builtins.list[str]) -> builtins.list[str]:
     """
-    Recursively collect dotted names of files under the given node.
+    Recursively collect slash-separated paths of files under the given node.
     """
     found = []
     for child in node.iterdir():
@@ -47,5 +47,5 @@ def _walk(node: Traversable, parts: builtins.list[str]) -> builtins.list[str]:
             if child.name != "__pycache__":
                 found.extend(_walk(child, [*parts, child.name]))
         elif child.name != "__init__.py":
-            found.append(".".join([*parts, child.name]))
+            found.append("/".join([*parts, child.name]))
     return found
