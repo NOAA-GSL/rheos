@@ -1,5 +1,10 @@
+import os
 from importlib import resources
 from importlib.resources.abc import Traversable
+from pathlib import Path
+
+from uwtools.api.config import compose as uw_compose
+from uwtools.config.formats.base import Config
 
 from rheos.util import pkgname
 
@@ -12,11 +17,20 @@ def catalog() -> list[str]:
     return sorted(_walk(resources.files(f"{pkgname}.resources.config"), []))
 
 
-def compose() -> None:
+def compose(configs: list[str], *, quiet: bool = False, realize: bool = False) -> Config:
     """
-    Compose a config.
+    Compose the given configs, writing the result to stdout unless quiet.
     """
-    print("rheos.api.config.compose() called")
+    if quiet:
+        return uw_compose(configs, output_file=Path(os.devnull), realize=realize)
+    return uw_compose(configs, realize=realize)
+
+
+def compose_to_dict(configs: list[str]) -> dict:
+    """
+    Compose the given configs and return the result as a dict.
+    """
+    return compose(configs, quiet=True).data
 
 
 def extract(key_path: list[str]) -> str:

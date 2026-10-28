@@ -5,13 +5,17 @@ from importlib import import_module
 import pytest
 
 from rheos import cli
-from rheos.util import resource
+from rheos.util import resource, resource_path
 
 
 @pytest.mark.parametrize(
     ("action", "extra", "expected"),
     [
-        ("compose", {}, "rheos.api.config.compose() called"),
+        (
+            "compose",
+            {"configs": [str(resource_path("config/base.yaml"))], "realize": False},
+            resource("config/base.yaml"),
+        ),
         ("ls", {}, "platform/ursa.yaml"),
         (
             "show",
@@ -43,26 +47,34 @@ def _patch_version(mocker):
 
 
 @pytest.mark.parametrize(
-    ("action", "positionals"), [("compose", []), ("ls", []), ("show", ["a/b.yaml"])]
+    ("action", "argv", "expected"),
+    [
+        ("compose", ["a.yaml"], {"configs": ["a.yaml"], "realize": False}),
+        ("compose", ["a.yaml", "b.yaml"], {"configs": ["a.yaml", "b.yaml"], "realize": False}),
+        ("compose", ["--realize", "a.yaml"], {"configs": ["a.yaml"], "realize": True}),
+        ("ls", [], {}),
+        ("show", ["a/b.yaml"], {"key_path": "a/b.yaml"}),
+    ],
 )
 @pytest.mark.parametrize("debug", [[], ["-d"], ["--debug"]])
-def test__parse_args(action, debug, mocker, positionals):
+def test__parse_args(action, argv, debug, expected, mocker):
     _patch_version(mocker)
-    args = cli._parse_args(["rheos", "config", action, *positionals, *debug])
+    args = cli._parse_args(["rheos", "config", action, *argv, *debug])
     assert args.mode == "config"
     assert args.action == action
     assert args.debug is bool(debug)
-    if positionals:
-        assert args.key_path == positionals[0]
+    for k, v in expected.items():
+        assert getattr(args, k) == v
 
 
+@pytest.mark.parametrize(("action", "metavar"), [("compose", "CONFIG"), ("show", "KEY_PATH")])
 @pytest.mark.parametrize("code", [2])
-def test__parse_args_missing_positional(capsys, code, mocker):
+def test__parse_args_missing_positional(action, capsys, code, metavar, mocker):
     _patch_version(mocker)
     with pytest.raises(SystemExit) as e:
-        cli._parse_args(["rheos", "config", "show"])
+        cli._parse_args(["rheos", "config", action])
     assert e.value.code == code
-    assert "KEY_PATH" in capsys.readouterr().err
+    assert metavar in capsys.readouterr().err
 
 
 @pytest.mark.parametrize(

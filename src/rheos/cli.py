@@ -1,6 +1,6 @@
 import json
 import sys
-from argparse import ArgumentParser, HelpFormatter, Namespace
+from argparse import ArgumentParser, HelpFormatter, Namespace, _ArgumentGroup
 from importlib import import_module
 from pathlib import Path
 from typing import Any, NoReturn
@@ -10,13 +10,28 @@ from uwtools.api.logging import use_uwtools_logger
 from rheos.util import pkgname, resource
 
 # Mapping of modes (rheos.api modules) to actions, and of actions to functions in those modules
-# plus their positional arguments (names mapped to help strings):
+# plus their arguments (names mapped to ArgumentParser.add_argument() keyword arguments, where names
+# starting with "-" are optional and others are required):
 
-MODES: dict[str, dict[str, tuple[str, dict[str, str]]]] = {
+MODES: dict[str, dict[str, tuple[str, dict[str, dict[str, Any]]]]] = {
     "config": {
-        "compose": ("compose", {}),
+        "compose": (
+            "compose",
+            {
+                "--realize": {"action": "store_true", "help": "Realize the composed config"},
+                "configs": {"help": "Config files to compose", "metavar": "CONFIG", "nargs": "+"},
+            },
+        ),
         "ls": ("ls", {}),
-        "show": ("show", {"key_path": "Slash-separated path to config resource"}),
+        "show": (
+            "show",
+            {
+                "key_path": {
+                    "help": "Slash-separated path to config resource",
+                    "metavar": "KEY_PATH",
+                }
+            },
+        ),
     },
 }
 
@@ -27,8 +42,9 @@ def main() -> None:
     args = _parse_args(sys.argv)
     use_uwtools_logger(verbose=args.debug)
     module = import_module(f"{pkgname}.api.{args.mode}")
-    function, positionals = MODES[args.mode][args.action]
-    getattr(module, function)(**{name: getattr(args, name) for name in positionals})
+    function, arguments = MODES[args.mode][args.action]
+    dests = [name.lstrip("-") for name in arguments]
+    getattr(module, function)(**{dest: getattr(args, dest) for dest in dests})
 
 
 # Private
@@ -55,7 +71,11 @@ class _Parser(ArgumentParser):
         return super().format_help() + "\n" + "\n".join(lines)
 
 
-def _add_common_args(parser: ArgumentParser, argv0: str, debug: bool = False) -> None:
+def _add_common_args(
+    parser: ArgumentParser,
+    argv0: str,
+    debug: bool = False,
+) -> _ArgumentGroup:
     optional = parser.add_argument_group("Optional arguments")
     if debug:
         optional.add_argument(
@@ -77,6 +97,7 @@ def _add_common_args(parser: ArgumentParser, argv0: str, debug: bool = False) ->
         help="Show version and exit",
         version=f"{Path(argv0).name} {_version()}",
     )
+    return optional
 
 
 def _formatter(prog: str) -> HelpFormatter:
@@ -93,15 +114,19 @@ def _parse_args(argv: list[str]) -> Namespace:
         actions_subparsers = mode_parser.add_subparsers(
             dest="action", metavar="ACTION", parser_class=ArgumentParser, required=True
         )
-        for action, (_, positionals) in actions.items():
+        for action, (_, arguments) in actions.items():
             action_parser = actions_subparsers.add_parser(
                 action, add_help=False, formatter_class=_formatter
             )
+            positionals = {k: v for k, v in arguments.items() if not k.startswith("-")}
             if positionals:
                 required = action_parser.add_argument_group("Required arguments")
-                for name, helpmsg in positionals.items():
-                    required.add_argument(name, help=helpmsg, metavar=name.upper())
-            _add_common_args(action_parser, argv[0], debug=True)
+                for name, kwargs in positionals.items():
+                    required.add_argument(name, **kwargs)
+            optional = _add_common_args(action_parser, argv[0], debug=True)
+            for name, kwargs in arguments.items():
+                if name.startswith("-"):
+                    optional.add_argument(name, **kwargs)
     args = argv[1:]
     if not args or (len(args) == 1 and args[0] in MODES):
         args.append("--help")

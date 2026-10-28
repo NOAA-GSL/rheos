@@ -10,9 +10,35 @@ def test_catalog():
     assert config.catalog() == ["base.yaml", "platform/ursa.yaml", "workflow/rocoto.yaml"]
 
 
-def test_compose(capsys):
-    config.compose()
-    assert "rheos.api.config.compose() called" in capsys.readouterr().out
+@pytest.fixture
+def configs(tmp_path):
+    a = tmp_path / "a.yaml"
+    a.write_text("a: 1\nb: '{{ a }}'\n")
+    b = tmp_path / "b.yaml"
+    b.write_text("c: 2\n")
+    return [str(a), str(b)]
+
+
+@pytest.mark.parametrize(
+    ("realize", "b"),
+    [(False, "{{ a }}"), (True, "1")],
+)
+@pytest.mark.parametrize("quiet", [False, True])
+def test_compose(b, capsys, configs, quiet, realize):
+    result = config.compose(configs, quiet=quiet, realize=realize)
+    assert result.data == {"a": 1, "b": b, "c": 2}
+    out = capsys.readouterr().out
+    if quiet:
+        assert not out
+    else:
+        assert "c: 2" in out
+
+
+def test_compose_to_dict(capsys, configs):
+    result = config.compose_to_dict(configs)
+    assert type(result) is dict
+    assert result == {"a": 1, "b": "{{ a }}", "c": 2}
+    assert not capsys.readouterr().out
 
 
 @pytest.mark.parametrize("key_path", [["base.yaml"], ["platform", "ursa.yaml"]])
