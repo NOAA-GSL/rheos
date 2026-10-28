@@ -59,6 +59,7 @@ ignore = [
   "ANN001", # missing-type-function-argument
   "ANN201", # missing-return-type-undocumented-public-function
   "ANN202", # missing-return-type-private-function
+  "PT013",  # pytest-incorrect-pytest-import
   "S101",   # assert
   "SLF001", # private-member-access
 ]

@@ -1,19 +1,19 @@
-import pytest
+from pytest import fixture, mark
 
 from rheos.api import config
 
 
-@pytest.fixture
+@fixture
 def configs(config_root):  # noqa: ARG001
     return ["a.yaml", "x/y/b.yaml"]
 
 
-@pytest.mark.usefixtures("config_root")
+@mark.usefixtures("config_root")
 def test_catalog():
     assert config.catalog() == ["a.yaml", "x/y/b.yaml"]
 
 
-@pytest.mark.parametrize(
+@mark.parametrize(
     ("realize", "b"),
     [(False, "{{ a }}"), (True, "1")],
 )
@@ -30,34 +30,34 @@ def test_compose_to_dict(capsys, configs):
     assert not capsys.readouterr().out
 
 
-@pytest.mark.parametrize(
+@mark.parametrize(
     ("key_path", "expected"),
     [(["a.yaml"], "a: 1\nb: '{{ a }}'\n"), (["x", "y", "b.yaml"], "c: 2\n")],
 )
-@pytest.mark.usefixtures("config_root")
+@mark.usefixtures("config_root")
 def test_extract(expected, key_path):
     assert config.extract(key_path) == expected
 
 
-@pytest.mark.usefixtures("config_root")
+@mark.usefixtures("config_root")
 def test_ls(capsys):
     config.ls()
     assert capsys.readouterr().out == "a.yaml\nx/y/b.yaml\n"
 
 
-@pytest.mark.parametrize(
+@mark.parametrize(
     ("key_path", "expected"), [("a.yaml", "a: 1\nb: '{{ a }}'\n"), ("x/y/b.yaml", "c: 2\n")]
 )
-@pytest.mark.usefixtures("config_root")
+@mark.usefixtures("config_root")
 def test_show(capsys, expected, key_path):
     config.show(key_path)
     assert capsys.readouterr().out == expected
 
 
-@pytest.mark.parametrize(
+@mark.parametrize(
     ("key_path", "expected"), [("a.yaml", "a: 1\nb: '{{ a }}'\n"), ("x/y/b.yaml", "c: 2\n")]
 )
-@pytest.mark.usefixtures("config_root")
+@mark.usefixtures("config_root")
 def test__node(expected, key_path):
     assert config._node(key_path).read_text() == expected
 
