@@ -39,7 +39,7 @@ class _Parser(ArgumentParser):
     An ArgumentParser listing available choices (modes or actions) in its help and errors.
     """
 
-    def __init__(self, *args: Any, choices: list[str], label: str, **kwargs: Any) -> None:  # noqa: ANN401
+    def __init__(self, *args: Any, choices: list[str], label: str, **kwargs: Any) -> None:
         kwargs.setdefault("add_help", False)
         kwargs.setdefault("formatter_class", _formatter)
         super().__init__(*args, **kwargs)
@@ -55,7 +55,7 @@ class _Parser(ArgumentParser):
         return super().format_help() + "\n" + "\n".join(lines)
 
 
-def _add_common_args(parser: ArgumentParser, argv0: str, debug: bool = False) -> None:  # noqa: FBT001,FBT002
+def _add_common_args(parser: ArgumentParser, argv0: str, debug: bool = False) -> None:
     optional = parser.add_argument_group("Optional arguments")
     if debug:
         optional.add_argument(
