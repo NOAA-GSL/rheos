@@ -10,6 +10,7 @@ from rheos.util import pkgname, version
 
 # Mapping of modes (rheos.api modules) to actions, and of actions to functions in those modules
 # plus their positional arguments (names mapped to help strings):
+
 MODES: dict[str, dict[str, tuple[str, dict[str, str]]]] = {
     "config": {
         "compose": ("compose", {}),
