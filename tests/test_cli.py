@@ -8,17 +8,16 @@ from rheos import cli
 
 
 @pytest.mark.parametrize(
-    ("action", "expected"),
+    ("action", "extra", "expected"),
     [
-        ("compose", "rheos.api.config.compose() called"),
-        ("extract", "rheos.api.config.extract() called"),
-        ("list", "platform/ursa.yaml"),
+        ("compose", {}, "rheos.api.config.compose() called"),
+        ("extract", {"key_path": "platform/ursa.yaml"}, "{}"),
+        ("list", {}, "platform/ursa.yaml"),
     ],
 )
-def test_main(action, capsys, expected, mocker):
-    parse_args = mocker.patch.object(
-        cli, "_parse_args", return_value=Namespace(action=action, debug=True, mode="config")
-    )
+def test_main(action, capsys, expected, extra, mocker):
+    namespace = Namespace(action=action, debug=True, mode="config", **extra)
+    parse_args = mocker.patch.object(cli, "_parse_args", return_value=namespace)
     use_logger = mocker.patch.object(cli, "use_uwtools_logger")
     mocker.patch.object(sys, "argv", ["rheos", "config", action, "-d"])
     cli.main()
@@ -30,7 +29,7 @@ def test_main(action, capsys, expected, mocker):
 @pytest.mark.parametrize(("mode", "actions"), cli.MODES.items())
 def test_modes(mode, actions):
     module = import_module(f"rheos.api.{mode}")
-    for function in actions.values():
+    for function, _ in actions.values():
         assert callable(getattr(module, function))
 
 
@@ -38,14 +37,27 @@ def _patch_version(mocker):
     mocker.patch.object(cli, "version", return_value="version 1.2.3 build 4")
 
 
-@pytest.mark.parametrize("action", ["compose", "extract", "list"])
+@pytest.mark.parametrize(
+    ("action", "positionals"), [("compose", []), ("extract", ["a/b.yaml"]), ("list", [])]
+)
 @pytest.mark.parametrize("debug", [[], ["-d"], ["--debug"]])
-def test__parse_args(action, debug, mocker):
+def test__parse_args(action, debug, mocker, positionals):
     _patch_version(mocker)
-    args = cli._parse_args(["rheos", "config", action, *debug])
+    args = cli._parse_args(["rheos", "config", action, *positionals, *debug])
     assert args.mode == "config"
     assert args.action == action
     assert args.debug is bool(debug)
+    if positionals:
+        assert args.key_path == positionals[0]
+
+
+@pytest.mark.parametrize("code", [2])
+def test__parse_args_missing_positional(capsys, code, mocker):
+    _patch_version(mocker)
+    with pytest.raises(SystemExit) as e:
+        cli._parse_args(["rheos", "config", "extract"])
+    assert e.value.code == code
+    assert "KEY_PATH" in capsys.readouterr().err
 
 
 @pytest.mark.parametrize(

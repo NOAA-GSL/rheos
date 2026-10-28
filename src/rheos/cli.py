@@ -8,12 +8,13 @@ from uwtools.api.logging import use_uwtools_logger
 
 from rheos.util import pkgname, version
 
-# Mapping of modes (rheos.api modules) to actions, and of actions to functions in those modules:
-MODES = {
+# Mapping of modes (rheos.api modules) to actions, and of actions to functions in those modules
+# plus their positional arguments (names mapped to help strings):
+MODES: dict[str, dict[str, tuple[str, dict[str, str]]]] = {
     "config": {
-        "compose": "compose",
-        "extract": "extract",
-        "list": "list_to_stdout",
+        "compose": ("compose", {}),
+        "extract": ("extract_to_stdout", {"key_path": "Slash-separated path to config resource"}),
+        "list": ("list_to_stdout", {}),
     },
 }
 
@@ -24,7 +25,8 @@ def main() -> None:
     args = _parse_args(sys.argv)
     use_uwtools_logger(verbose=args.debug)
     module = import_module(f"{pkgname}.api.{args.mode}")
-    getattr(module, MODES[args.mode][args.action])()
+    function, positionals = MODES[args.mode][args.action]
+    getattr(module, function)(**{name: getattr(args, name) for name in positionals})
 
 
 # Private
@@ -89,10 +91,14 @@ def _parse_args(argv: list[str]) -> Namespace:
         actions_subparsers = mode_parser.add_subparsers(
             dest="action", metavar="ACTION", parser_class=ArgumentParser, required=True
         )
-        for action in actions:
+        for action, (_, positionals) in actions.items():
             action_parser = actions_subparsers.add_parser(
                 action, add_help=False, formatter_class=_formatter
             )
+            if positionals:
+                required = action_parser.add_argument_group("Required arguments")
+                for name, helpmsg in positionals.items():
+                    required.add_argument(name, help=helpmsg, metavar=name.upper())
             _add_common_args(action_parser, argv[0], debug=True)
     args = argv[1:]
     if not args or (len(args) == 1 and args[0] in MODES):

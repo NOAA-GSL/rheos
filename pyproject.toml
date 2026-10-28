@@ -42,6 +42,7 @@ ignore = [
   "D200",   # unnecessary-multiline-docstring
   "D203",   # incorrect-blank-line-before-class
   "D212",   # multi-line-summary-first-line
+  "T201",   # "print
   "TC006",  # runtime-cast-value
   "UP031",  # printf-string-formatting
 ]

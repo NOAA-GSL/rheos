@@ -9,14 +9,24 @@ def compose() -> None:
     """
     Compose a config.
     """
-    print("rheos.api.config.compose() called")  # noqa: T201
+    print("rheos.api.config.compose() called")
 
 
-def extract() -> None:
+def extract(key_path: builtins.list[str]) -> str:
     """
-    Extract a config.
+    Return the text of the config resource at the given key path.
     """
-    print("rheos.api.config.extract() called")  # noqa: T201
+    node = resources.files(f"{pkgname}.resources.config")
+    for key in key_path:
+        node = node / key
+    return node.read_text()
+
+
+def extract_to_stdout(key_path: str) -> None:
+    """
+    Print the text of the config resource at the given slash-separated key path.
+    """
+    print(extract(key_path.split("/")), end="")
 
 
 def list() -> builtins.list[str]:  # noqa: A001
@@ -31,7 +41,7 @@ def list_to_stdout() -> None:
     Print available config resources, one per line.
     """
     for line in list():
-        print(line)  # noqa: T201
+        print(line)
 
 
 # Private
