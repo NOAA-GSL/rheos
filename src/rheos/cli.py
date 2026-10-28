@@ -26,7 +26,9 @@ def main() -> None:
 
 
 class _Parser(ArgumentParser):
-    """An ArgumentParser listing available choices (modes or actions) in its help and errors."""
+    """
+    An ArgumentParser listing available choices (modes or actions) in its help and errors.
+    """
 
     def __init__(self, *args: Any, choices: list[str], label: str, **kwargs: Any) -> None:  # noqa: ANN401
         kwargs.setdefault("add_help", False)
