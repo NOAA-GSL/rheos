@@ -7,8 +7,15 @@ import pytest
 from rheos import cli
 
 
-@pytest.mark.parametrize("action", ["compose", "extract", "list"])
-def test_main(action, capsys, mocker):
+@pytest.mark.parametrize(
+    ("action", "expected"),
+    [
+        ("compose", "rheos.api.config.compose() called"),
+        ("extract", "rheos.api.config.extract() called"),
+        ("list", "platform.ursa.yaml"),
+    ],
+)
+def test_main(action, capsys, expected, mocker):
     parse_args = mocker.patch.object(
         cli, "_parse_args", return_value=Namespace(action=action, debug=True, mode="config")
     )
@@ -17,14 +24,14 @@ def test_main(action, capsys, mocker):
     cli.main()
     parse_args.assert_called_once_with(["rheos", "config", action, "-d"])
     use_logger.assert_called_once_with(verbose=True)
-    assert f"rheos.api.config.{action}() called" in capsys.readouterr().out
+    assert expected in capsys.readouterr().out
 
 
 @pytest.mark.parametrize(("mode", "actions"), cli.MODES.items())
 def test_modes(mode, actions):
     module = import_module(f"rheos.api.{mode}")
-    for action in actions:
-        assert callable(getattr(module, action))
+    for function in actions.values():
+        assert callable(getattr(module, function))
 
 
 def _patch_version(mocker):

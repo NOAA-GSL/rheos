@@ -8,9 +8,13 @@ from uwtools.api.logging import use_uwtools_logger
 
 from rheos.util import pkgname, version
 
-# Mapping of modes (rheos.api modules) to actions (functions in those modules):
+# Mapping of modes (rheos.api modules) to actions, and of actions to functions in those modules:
 MODES = {
-    "config": ["compose", "extract", "list"],
+    "config": {
+        "compose": "compose",
+        "extract": "extract",
+        "list": "list_to_log",
+    },
 }
 
 # Public
@@ -19,7 +23,8 @@ MODES = {
 def main() -> None:
     args = _parse_args(sys.argv)
     use_uwtools_logger(verbose=args.debug)
-    getattr(import_module(f"{pkgname}.api.{args.mode}"), args.action)()
+    module = import_module(f"{pkgname}.api.{args.mode}")
+    getattr(module, MODES[args.mode][args.action])()
 
 
 # Private
@@ -79,7 +84,7 @@ def _parse_args(argv: list[str]) -> Namespace:
     _add_common_args(parser, argv[0])
     modes = parser.add_subparsers(dest="mode", metavar="MODE", parser_class=_Parser, required=True)
     for mode, actions in MODES.items():
-        mode_parser = modes.add_parser(mode, choices=actions, label="actions")
+        mode_parser = modes.add_parser(mode, choices=list(actions), label="actions")
         _add_common_args(mode_parser, argv[0])
         actions_subparsers = mode_parser.add_subparsers(
             dest="action", metavar="ACTION", parser_class=ArgumentParser, required=True
