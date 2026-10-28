@@ -1,4 +1,3 @@
-import builtins
 from importlib import resources
 from importlib.resources.abc import Traversable
 
@@ -12,7 +11,7 @@ def compose() -> None:
     print("rheos.api.config.compose() called")
 
 
-def extract(key_path: builtins.list[str]) -> str:
+def extract(key_path: list[str]) -> str:
     """
     Return the text of the config resource at the given key path.
     """
@@ -29,25 +28,25 @@ def extract_to_stdout(key_path: str) -> None:
     print(extract(key_path.split("/")), end="")
 
 
-def list() -> builtins.list[str]:  # noqa: A001
+def ls() -> list[str]:
     """
     List available config resources as slash-separated paths relative to the config resources root.
     """
     return sorted(_walk(resources.files(f"{pkgname}.resources.config"), []))
 
 
-def list_to_stdout() -> None:
+def ls_to_stdout() -> None:
     """
     Print available config resources, one per line.
     """
-    for line in list():
+    for line in ls():
         print(line)
 
 
 # Private
 
 
-def _walk(node: Traversable, parts: builtins.list[str]) -> builtins.list[str]:
+def _walk(node: Traversable, parts: list[str]) -> list[str]:
     """
     Recursively collect slash-separated paths of files under the given node.
     """

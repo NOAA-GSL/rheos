@@ -14,7 +14,7 @@ MODES: dict[str, dict[str, tuple[str, dict[str, str]]]] = {
     "config": {
         "compose": ("compose", {}),
         "extract": ("extract_to_stdout", {"key_path": "Slash-separated path to config resource"}),
-        "list": ("list_to_stdout", {}),
+        "ls": ("ls_to_stdout", {}),
     },
 }
 

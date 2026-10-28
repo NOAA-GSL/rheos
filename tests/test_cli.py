@@ -12,7 +12,7 @@ from rheos import cli
     [
         ("compose", {}, "rheos.api.config.compose() called"),
         ("extract", {"key_path": "platform/ursa.yaml"}, "{}"),
-        ("list", {}, "platform/ursa.yaml"),
+        ("ls", {}, "platform/ursa.yaml"),
     ],
 )
 def test_main(action, capsys, expected, extra, mocker):
@@ -38,7 +38,7 @@ def _patch_version(mocker):
 
 
 @pytest.mark.parametrize(
-    ("action", "positionals"), [("compose", []), ("extract", ["a/b.yaml"]), ("list", [])]
+    ("action", "positionals"), [("compose", []), ("extract", ["a/b.yaml"]), ("ls", [])]
 )
 @pytest.mark.parametrize("debug", [[], ["-d"], ["--debug"]])
 def test__parse_args(action, debug, mocker, positionals):
@@ -93,8 +93,8 @@ def test__parse_args_help(argv, capsys, code, expected, mocker):
         ["-v"],
         ["--version"],
         ["config", "-v"],
-        ["config", "list", "-h"],
-        ["config", "list", "--version"],
+        ["config", "ls", "-h"],
+        ["config", "ls", "--version"],
     ],
 )
 def test__parse_args_exit(argv, mocker):
