@@ -27,6 +27,9 @@ warn_return_any = true
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
+filterwarnings = [
+  "ignore:jsonschema.RefResolver is deprecated:DeprecationWarning:uwtools.config.validator",
+]
 
 [tool.ruff]
 line-length = 100
