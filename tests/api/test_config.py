@@ -1,23 +1,16 @@
-from pathlib import Path
-
 import pytest
 
 from rheos.api import config
-from rheos.util import resource_path
-
-
-def test_catalog():
-    assert config.catalog() == ["base.yaml", "platform/ursa.yaml", "workflow/rocoto.yaml"]
 
 
 @pytest.fixture
-def configs(mocker, tmp_path):
-    # Mock the resource root, since test configs cannot be added to the installed package.
-    mocker.patch.object(config, "_root", return_value=tmp_path)
-    (tmp_path / "a.yaml").write_text("a: 1\nb: '{{ a }}'\n")
-    (tmp_path / "x" / "y").mkdir(parents=True)
-    (tmp_path / "x" / "y" / "b.yaml").write_text("c: 2\n")
+def configs(config_root):  # noqa: ARG001
     return ["a.yaml", "x/y/b.yaml"]
+
+
+@pytest.mark.usefixtures("config_root")
+def test_catalog():
+    assert config.catalog() == ["a.yaml", "x/y/b.yaml"]
 
 
 @pytest.mark.parametrize(
@@ -37,30 +30,42 @@ def test_compose_to_dict(capsys, configs):
     assert not capsys.readouterr().out
 
 
-@pytest.mark.parametrize("key_path", [["base.yaml"], ["platform", "ursa.yaml"]])
-def test_extract(key_path):
-    expected = resource_path(Path("config", *key_path)).read_text()
+@pytest.mark.parametrize(
+    ("key_path", "expected"),
+    [(["a.yaml"], "a: 1\nb: '{{ a }}'\n"), (["x", "y", "b.yaml"], "c: 2\n")],
+)
+@pytest.mark.usefixtures("config_root")
+def test_extract(expected, key_path):
     assert config.extract(key_path) == expected
 
 
+@pytest.mark.usefixtures("config_root")
 def test_ls(capsys):
     config.ls()
-    assert capsys.readouterr().out == "base.yaml\nplatform/ursa.yaml\nworkflow/rocoto.yaml\n"
+    assert capsys.readouterr().out == "a.yaml\nx/y/b.yaml\n"
 
 
-@pytest.mark.parametrize("key_path", ["base.yaml", "platform/ursa.yaml"])
-def test_show(capsys, key_path):
+@pytest.mark.parametrize(
+    ("key_path", "expected"), [("a.yaml", "a: 1\nb: '{{ a }}'\n"), ("x/y/b.yaml", "c: 2\n")]
+)
+@pytest.mark.usefixtures("config_root")
+def test_show(capsys, expected, key_path):
     config.show(key_path)
-    assert capsys.readouterr().out == resource_path(Path("config", key_path)).read_text()
+    assert capsys.readouterr().out == expected
 
 
-@pytest.mark.parametrize("key_path", ["base.yaml", "platform/ursa.yaml"])
-def test__node(key_path):
-    assert config._node(key_path).read_text() == resource_path(Path("config", key_path)).read_text()
+@pytest.mark.parametrize(
+    ("key_path", "expected"), [("a.yaml", "a: 1\nb: '{{ a }}'\n"), ("x/y/b.yaml", "c: 2\n")]
+)
+@pytest.mark.usefixtures("config_root")
+def test__node(expected, key_path):
+    assert config._node(key_path).read_text() == expected
 
 
 def test__root():
-    assert {x.name for x in config._root().iterdir()} >= {"base.yaml", "platform", "workflow"}
+    root = config._root()
+    assert root.name == "config"
+    assert (root / "__init__.py").is_file()
 
 
 def test__walk(tmp_path):

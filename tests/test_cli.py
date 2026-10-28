@@ -5,25 +5,17 @@ from importlib import import_module
 import pytest
 
 from rheos import cli
-from rheos.util import resource
 
 
 @pytest.mark.parametrize(
     ("action", "extra", "expected"),
     [
-        (
-            "compose",
-            {"configs": ["base.yaml", "platform/ursa.yaml"], "realize": False},
-            resource("config/platform/ursa.yaml"),
-        ),
-        ("ls", {}, "platform/ursa.yaml"),
-        (
-            "show",
-            {"key_path": "platform/ursa.yaml"},
-            resource("config/platform/ursa.yaml"),
-        ),
+        ("compose", {"configs": ["a.yaml", "x/y/b.yaml"], "realize": False}, "c: 2"),
+        ("ls", {}, "a.yaml\nx/y/b.yaml\n"),
+        ("show", {"key_path": "x/y/b.yaml"}, "c: 2\n"),
     ],
 )
+@pytest.mark.usefixtures("config_root")
 def test_main(action, capsys, expected, extra, mocker):
     namespace = Namespace(action=action, debug=True, mode="config", **extra)
     parse_args = mocker.patch.object(cli, "_parse_args", return_value=namespace)
