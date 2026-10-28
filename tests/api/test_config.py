@@ -6,29 +6,29 @@ from rheos.api import config
 from rheos.util import resource_path
 
 
+def test_catalog():
+    assert config.catalog() == ["base.yaml", "platform/ursa.yaml", "workflow/rocoto.yaml"]
+
+
 def test_compose(capsys):
     config.compose()
     assert "rheos.api.config.compose() called" in capsys.readouterr().out
 
 
-def test_ls():
-    assert config.ls() == ["base.yaml", "platform/ursa.yaml", "workflow/rocoto.yaml"]
+@pytest.mark.parametrize("key_path", [["base.yaml"], ["platform", "ursa.yaml"]])
+def test_extract(key_path):
+    expected = resource_path(Path("config", *key_path)).read_text()
+    assert config.extract(key_path) == expected
 
 
-def test_ls_to_stdout(capsys):
-    config.ls_to_stdout()
+def test_ls(capsys):
+    config.ls()
     assert capsys.readouterr().out == "base.yaml\nplatform/ursa.yaml\nworkflow/rocoto.yaml\n"
 
 
-@pytest.mark.parametrize("key_path", [["base.yaml"], ["platform", "ursa.yaml"]])
-def test_show(key_path):
-    expected = resource_path(Path("config", *key_path)).read_text()
-    assert config.show(key_path) == expected
-
-
 @pytest.mark.parametrize("key_path", ["base.yaml", "platform/ursa.yaml"])
-def test_show_to_stdout(capsys, key_path):
-    config.show_to_stdout(key_path)
+def test_show(capsys, key_path):
+    config.show(key_path)
     assert capsys.readouterr().out == resource_path(Path("config", key_path)).read_text()
 
 

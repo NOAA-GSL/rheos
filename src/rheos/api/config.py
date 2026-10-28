@@ -4,6 +4,14 @@ from importlib.resources.abc import Traversable
 from rheos.util import pkgname
 
 
+def catalog() -> list[str]:
+    """
+    Catalog available config resources as slash-separated paths relative to the config resources
+    root.
+    """
+    return sorted(_walk(resources.files(f"{pkgname}.resources.config"), []))
+
+
 def compose() -> None:
     """
     Compose a config.
@@ -11,22 +19,7 @@ def compose() -> None:
     print("rheos.api.config.compose() called")
 
 
-def ls() -> list[str]:
-    """
-    List available config resources as slash-separated paths relative to the config resources root.
-    """
-    return sorted(_walk(resources.files(f"{pkgname}.resources.config"), []))
-
-
-def ls_to_stdout() -> None:
-    """
-    Print available config resources, one per line.
-    """
-    for line in ls():
-        print(line)
-
-
-def show(key_path: list[str]) -> str:
+def extract(key_path: list[str]) -> str:
     """
     Return the text of the config resource at the given key path.
     """
@@ -36,11 +29,19 @@ def show(key_path: list[str]) -> str:
     return node.read_text()
 
 
-def show_to_stdout(key_path: str) -> None:
+def ls() -> None:
+    """
+    Print available config resources, one per line.
+    """
+    for line in catalog():
+        print(line)
+
+
+def show(key_path: str) -> None:
     """
     Print the text of the config resource at the given slash-separated key path.
     """
-    print(show(key_path.split("/")), end="")
+    print(extract(key_path.split("/")), end="")
 
 
 # Private
