@@ -28,10 +28,14 @@ def test_compose(b, capsys, configs, realize):
     assert "c: 2" in capsys.readouterr().out
 
 
-def test_compose_to_dict(capsys, configs):
-    result = config.compose_to_dict(configs)
+@mark.parametrize(
+    ("realize", "b"),
+    [(False, "{{ a }}"), (True, "1")],
+)
+def test_compose_to_dict(b, capsys, configs, realize):
+    result = config.compose_to_dict(configs, realize=realize)
     assert type(result) is dict
-    assert result == {"a": 1, "b": "{{ a }}", "c": 2}
+    assert result == {"a": 1, "b": b, "c": 2}
     assert not capsys.readouterr().out
 
 

@@ -27,14 +27,14 @@ def compose(configs: list[str], *, realize: bool = False) -> Config:
         return uw_compose(paths, realize=realize)
 
 
-def compose_to_dict(configs: list[str]) -> dict:
+def compose_to_dict(configs: list[str], *, realize: bool = False) -> dict:
     """
     Compose the config resources at the given slash-separated key paths and return the result as a
     dict.
     """
     with ExitStack() as stack:
         paths = [stack.enter_context(resources.as_file(_node(config))) for config in configs]
-        return uw_compose_to_dict(paths)
+        return uw_compose_to_dict(paths, realize=realize)
 
 
 def extract(key_path: list[str]) -> str:
