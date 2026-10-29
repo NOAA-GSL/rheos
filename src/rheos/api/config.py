@@ -1,6 +1,8 @@
-from contextlib import ExitStack
+from collections.abc import Iterator
+from contextlib import ExitStack, contextmanager
 from importlib import resources
 from importlib.resources.abc import Traversable
+from pathlib import Path
 
 from uwtools.api.config import compose as uw_compose
 from uwtools.api.config import compose_to_dict as uw_compose_to_dict
@@ -19,21 +21,23 @@ def catalog() -> list[str]:
 
 def compose(configs: list[str], *, realize: bool = False) -> Config:
     """
-    Compose the config resources at the given slash-separated key paths, writing the result to
-    stdout.
+    Compose the given configs, writing the result to stdout.
+
+    Each config is a filesystem path, if such a file exists, or else a slash-separated key path to a
+    config resource.
     """
-    with ExitStack() as stack:
-        paths = [stack.enter_context(resources.as_file(_node(config))) for config in configs]
+    with _paths(configs) as paths:
         return uw_compose(paths, realize=realize)
 
 
 def compose_to_dict(configs: list[str], *, realize: bool = False) -> dict:
     """
-    Compose the config resources at the given slash-separated key paths and return the result as a
-    dict.
+    Compose the given configs and return the result as a dict.
+
+    Each config is a filesystem path, if such a file exists, or else a slash-separated key path to a
+    config resource.
     """
-    with ExitStack() as stack:
-        paths = [stack.enter_context(resources.as_file(_node(config))) for config in configs]
+    with _paths(configs) as paths:
         return uw_compose_to_dict(paths, realize=realize)
 
 
@@ -70,6 +74,20 @@ def _node(key_path: str) -> Traversable:
     for key in key_path.split("/"):
         node = node / key
     return node
+
+
+@contextmanager
+def _paths(configs: list[str]) -> Iterator[list[Path]]:
+    """
+    Yield filesystem paths for the given configs, preferring existing files over config resources.
+    """
+    with ExitStack() as stack:
+        yield [
+            Path(config)
+            if Path(config).is_file()
+            else stack.enter_context(resources.as_file(_node(config)))
+            for config in configs
+        ]
 
 
 def _root() -> Traversable:

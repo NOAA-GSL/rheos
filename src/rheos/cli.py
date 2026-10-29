@@ -19,7 +19,11 @@ MODES: dict[str, dict[str, tuple[str, dict[str, dict[str, Any]]]]] = {
             "compose",
             {
                 "--realize": {"action": "store_true", "help": "Realize the composed config"},
-                "configs": {"help": "Config files to compose", "metavar": "CONFIG", "nargs": "+"},
+                "configs": {
+                    "help": "Config files, or config resource key paths, to compose",
+                    "metavar": "CONFIG",
+                    "nargs": "+",
+                },
             },
         ),
         "ls": ("ls", {}),

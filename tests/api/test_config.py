@@ -39,6 +39,14 @@ def test_compose_to_dict(b, capsys, configs, realize):
     assert not capsys.readouterr().out
 
 
+@mark.usefixtures("config_root")
+def test_compose_to_dict_filesystem_and_resources(tmp_path):
+    other = tmp_path / "other.yaml"
+    other.write_text("a: 2\nd: 3\n")
+    result = config.compose_to_dict(["a.yaml", str(other), "x/y/b.yaml"])
+    assert result == {"a": 2, "b": "{{ a }}", "c": 2, "d": 3}
+
+
 @mark.parametrize(
     ("key_path", "expected"),
     [(["a.yaml"], "a: 1\nb: '{{ a }}'\n"), (["x", "y", "b.yaml"], "c: 2\n")],
@@ -69,6 +77,18 @@ def test_show(capsys, expected, key_path):
 @mark.usefixtures("config_root")
 def test__node(expected, key_path):
     assert config._node(key_path).read_text() == expected
+
+
+@mark.usefixtures("config_root")
+def test__paths(monkeypatch, tmp_path):
+    cwd = tmp_path / "cwd"
+    cwd.mkdir()
+    monkeypatch.chdir(cwd)
+    (cwd / "a.yaml").write_text("a: 2\n")  # shadows the a.yaml config resource
+    other = tmp_path / "other.yaml"
+    other.write_text("d: 3\n")
+    with config._paths(["a.yaml", str(other), "x/y/b.yaml"]) as paths:
+        assert [path.read_text() for path in paths] == ["a: 2\n", "d: 3\n", "c: 2\n"]
 
 
 def test__root():
