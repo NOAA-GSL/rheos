@@ -15,6 +15,15 @@ from rheos.util import pkgname, resource
 
 MODES: dict[str, dict[str, tuple[str, dict[str, dict[str, Any]]]]] = {
     "config": {
+        "cat": (
+            "cat",
+            {
+                "key_path": {
+                    "help": "Slash-separated path to config resource",
+                    "metavar": "KEY_PATH",
+                }
+            },
+        ),
         "compose": (
             "compose",
             {
@@ -27,15 +36,6 @@ MODES: dict[str, dict[str, tuple[str, dict[str, dict[str, Any]]]]] = {
             },
         ),
         "ls": ("ls", {}),
-        "show": (
-            "show",
-            {
-                "key_path": {
-                    "help": "Slash-separated path to config resource",
-                    "metavar": "KEY_PATH",
-                }
-            },
-        ),
     },
 }
 

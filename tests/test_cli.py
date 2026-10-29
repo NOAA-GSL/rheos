@@ -22,9 +22,9 @@ def version():
 @mark.parametrize(
     ("action", "extra", "expected"),
     [
+        ("cat", {"key_path": "x/y/b.yaml"}, "c: 2\n"),
         ("compose", {"configs": ["a.yaml", "x/y/b.yaml"], "realize": False}, "c: 2"),
         ("ls", {}, "a.yaml\nx/y/b.yaml\n"),
-        ("show", {"key_path": "x/y/b.yaml"}, "c: 2\n"),
     ],
 )
 @mark.usefixtures("config_root")
@@ -52,11 +52,11 @@ def test_modes(mode, actions):
 @mark.parametrize(
     ("action", "argv", "expected"),
     [
+        ("cat", ["a/b.yaml"], {"key_path": "a/b.yaml"}),
         ("compose", ["a.yaml"], {"configs": ["a.yaml"], "realize": False}),
         ("compose", ["a.yaml", "b.yaml"], {"configs": ["a.yaml", "b.yaml"], "realize": False}),
         ("compose", ["--realize", "a.yaml"], {"configs": ["a.yaml"], "realize": True}),
         ("ls", [], {}),
-        ("show", ["a/b.yaml"], {"key_path": "a/b.yaml"}),
     ],
 )
 @mark.parametrize("debug", [[], ["-d"], ["--debug"]])
@@ -70,7 +70,7 @@ def test__parse_args(action, argv, debug, expected):
         assert getattr(args, k) == v
 
 
-@mark.parametrize(("action", "metavar"), [("compose", "CONFIG"), ("show", "KEY_PATH")])
+@mark.parametrize(("action", "metavar"), [("cat", "KEY_PATH"), ("compose", "CONFIG")])
 @mark.parametrize("code", [2])
 @mark.usefixtures("version")
 def test__parse_args_missing_positional(action, capsys, code, metavar):

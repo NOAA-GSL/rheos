@@ -11,6 +11,13 @@ from uwtools.config.formats.base import Config
 from rheos.util import pkgname
 
 
+def cat(key_path: str) -> None:
+    """
+    Print the text of the config resource at the given slash-separated key path.
+    """
+    print(extract(key_path.split("/")), end="")
+
+
 def catalog() -> list[str]:
     """
     Catalog available config resources as slash-separated paths relative to the config resources
@@ -54,13 +61,6 @@ def ls() -> None:
     """
     for line in catalog():
         print(line)
-
-
-def show(key_path: str) -> None:
-    """
-    Print the text of the config resource at the given slash-separated key path.
-    """
-    print(extract(key_path.split("/")), end="")
 
 
 # Private
