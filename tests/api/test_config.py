@@ -2,10 +2,15 @@ from pytest import fixture, mark
 
 from rheos.api import config
 
+# Fixtures
+
 
 @fixture
 def configs(config_root):  # noqa: ARG001
     return ["a.yaml", "x/y/b.yaml"]
+
+
+# Tests
 
 
 @mark.usefixtures("config_root")

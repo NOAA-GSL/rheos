@@ -4,6 +4,8 @@ from pytest import fixture
 
 from rheos.api import config
 
+# Fixtures
+
 
 @fixture
 def config_root(tmp_path):

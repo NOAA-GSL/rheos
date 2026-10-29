@@ -5,6 +5,8 @@ from pytest import mark
 
 from rheos import util
 
+# Tests
+
 
 def test_pkgname():
     assert util.pkgname == "rheos"

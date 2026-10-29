@@ -7,6 +7,17 @@ from pytest import fixture, mark, raises
 
 from rheos import cli
 
+# Fixtures
+
+
+@fixture
+def version():
+    with patch.object(cli, "_version", return_value="version 1.2.3 build 4"):
+        yield
+
+
+# Tests
+
 
 @mark.parametrize(
     ("action", "extra", "expected"),
@@ -36,12 +47,6 @@ def test_modes(mode, actions):
     module = import_module(f"rheos.api.{mode}")
     for function, _ in actions.values():
         assert callable(getattr(module, function))
-
-
-@fixture
-def version():
-    with patch.object(cli, "_version", return_value="version 1.2.3 build 4"):
-        yield
 
 
 @mark.parametrize(
