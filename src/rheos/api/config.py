@@ -15,7 +15,7 @@ def cat(key_path: str) -> None:
     """
     Print the text of the config resource at the given slash-separated key path.
     """
-    print(extract(key_path.split("/")), end="")
+    print(read(key_path.split("/")), end="")
 
 
 def catalog() -> list[str]:
@@ -48,19 +48,19 @@ def compose_to_dict(configs: list[str], *, realize: bool = False) -> dict:
         return uw_compose_to_dict(paths, realize=realize)
 
 
-def extract(key_path: list[str]) -> str:
-    """
-    Return the text of the config resource at the given key path.
-    """
-    return _node("/".join(key_path)).read_text()
-
-
 def ls() -> None:
     """
     Print available config resources, one per line.
     """
     for line in catalog():
         print(line)
+
+
+def read(key_path: list[str]) -> str:
+    """
+    Return the text of the config resource at the given key path.
+    """
+    return _node("/".join(key_path)).read_text()
 
 
 # Private

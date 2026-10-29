@@ -56,19 +56,19 @@ def test_compose_to_dict_filesystem_and_resources(tmp_path):
     assert result == {"a": 2, "b": "{{ a }}", "c": 2, "d": 3}
 
 
+@mark.usefixtures("config_root")
+def test_ls(capsys):
+    config.ls()
+    assert capsys.readouterr().out == "a.yaml\nx/y/b.yaml\n"
+
+
 @mark.parametrize(
     ("key_path", "expected"),
     [(["a.yaml"], "a: 1\nb: '{{ a }}'\n"), (["x", "y", "b.yaml"], "c: 2\n")],
 )
 @mark.usefixtures("config_root")
-def test_extract(expected, key_path):
-    assert config.extract(key_path) == expected
-
-
-@mark.usefixtures("config_root")
-def test_ls(capsys):
-    config.ls()
-    assert capsys.readouterr().out == "a.yaml\nx/y/b.yaml\n"
+def test_read(expected, key_path):
+    assert config.read(key_path) == expected
 
 
 @mark.parametrize(
