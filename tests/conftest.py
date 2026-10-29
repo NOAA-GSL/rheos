@@ -22,7 +22,5 @@ def config_root(tmp_path):
         path = tmp_path / relpath
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
-    # Mock the resource root, since test configs cannot be added to the installed package, and the
-    # real resources will change over time.
     with patch.object(config, "_root", return_value=tmp_path):
         yield tmp_path
