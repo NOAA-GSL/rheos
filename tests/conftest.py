@@ -1,16 +1,15 @@
+from unittest.mock import patch
+
 from pytest import fixture
 
 from rheos.api import config
 
 
 @fixture
-def config_root(mocker, tmp_path):
+def config_root(tmp_path):
     """
     Provide a temporary config-resources tree in place of the real one.
     """
-    # Mock the resource root, since test configs cannot be added to the installed package, and the
-    # real resources will change over time.
-    mocker.patch.object(config, "_root", return_value=tmp_path)
     files = {
         "__init__.py": "",
         "a.yaml": "a: 1\nb: '{{ a }}'\n",
@@ -21,4 +20,7 @@ def config_root(mocker, tmp_path):
         path = tmp_path / relpath
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
-    return tmp_path
+    # Mock the resource root, since test configs cannot be added to the installed package, and the
+    # real resources will change over time.
+    with patch.object(config, "_root", return_value=tmp_path):
+        yield tmp_path

@@ -1,8 +1,9 @@
 import sys
 from argparse import Namespace
 from importlib import import_module
+from unittest.mock import patch
 
-from pytest import mark, raises
+from pytest import fixture, mark, raises
 
 from rheos import cli
 
@@ -16,13 +17,16 @@ from rheos import cli
     ],
 )
 @mark.usefixtures("config_root")
-def test_main(action, capsys, expected, extra, mocker):
+def test_main(action, capsys, expected, extra):
+    argv = ["rheos", "config", action, "-d"]
     namespace = Namespace(action=action, debug=True, mode="config", **extra)
-    parse_args = mocker.patch.object(cli, "_parse_args", return_value=namespace)
-    use_logger = mocker.patch.object(cli, "use_uwtools_logger")
-    mocker.patch.object(sys, "argv", ["rheos", "config", action, "-d"])
-    cli.main()
-    parse_args.assert_called_once_with(["rheos", "config", action, "-d"])
+    with (
+        patch.object(cli, "_parse_args", return_value=namespace) as parse_args,
+        patch.object(cli, "use_uwtools_logger") as use_logger,
+        patch.object(sys, "argv", argv),
+    ):
+        cli.main()
+    parse_args.assert_called_once_with(argv)
     use_logger.assert_called_once_with(verbose=True)
     assert expected in capsys.readouterr().out
 
@@ -34,8 +38,10 @@ def test_modes(mode, actions):
         assert callable(getattr(module, function))
 
 
-def _patch_version(mocker):
-    mocker.patch.object(cli, "_version", return_value="version 1.2.3 build 4")
+@fixture
+def version():
+    with patch.object(cli, "_version", return_value="version 1.2.3 build 4"):
+        yield
 
 
 @mark.parametrize(
@@ -49,8 +55,8 @@ def _patch_version(mocker):
     ],
 )
 @mark.parametrize("debug", [[], ["-d"], ["--debug"]])
-def test__parse_args(action, argv, debug, expected, mocker):
-    _patch_version(mocker)
+@mark.usefixtures("version")
+def test__parse_args(action, argv, debug, expected):
     args = cli._parse_args(["rheos", "config", action, *argv, *debug])
     assert args.mode == "config"
     assert args.action == action
@@ -61,8 +67,8 @@ def test__parse_args(action, argv, debug, expected, mocker):
 
 @mark.parametrize(("action", "metavar"), [("compose", "CONFIG"), ("show", "KEY_PATH")])
 @mark.parametrize("code", [2])
-def test__parse_args_missing_positional(action, capsys, code, metavar, mocker):
-    _patch_version(mocker)
+@mark.usefixtures("version")
+def test__parse_args_missing_positional(action, capsys, code, metavar):
     with raises(SystemExit) as e:
         cli._parse_args(["rheos", "config", action])
     assert e.value.code == code
@@ -82,8 +88,8 @@ def test__parse_args_missing_positional(action, capsys, code, metavar, mocker):
         (["config", "foo"], 2, "Available actions:"),
     ],
 )
-def test__parse_args_help(argv, capsys, code, expected, mocker):
-    _patch_version(mocker)
+@mark.usefixtures("version")
+def test__parse_args_help(argv, capsys, code, expected):
     with raises(SystemExit) as e:
         cli._parse_args(["rheos", *argv])
     assert e.value.code == code
@@ -106,13 +112,13 @@ def test__parse_args_help(argv, capsys, code, expected, mocker):
         ["config", "ls", "--version"],
     ],
 )
-def test__parse_args_exit(argv, mocker):
-    _patch_version(mocker)
+@mark.usefixtures("version")
+def test__parse_args_exit(argv):
     with raises(SystemExit) as e:
         cli._parse_args(["rheos", *argv])
     assert e.value.code == 0
 
 
-def test__version(mocker):
-    mocker.patch.object(cli, "resource", return_value='{"version": "1.2.3", "buildnum": "4"}')
-    assert cli._version() == "version 1.2.3"
+def test__version():
+    with patch.object(cli, "resource", return_value='{"version": "1.2.3", "buildnum": "4"}'):
+        assert cli._version() == "version 1.2.3"
