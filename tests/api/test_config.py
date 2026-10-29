@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pytest import fixture, mark
 
 from rheos.api import config
@@ -31,8 +33,9 @@ def test_catalog():
     ("realize", "b"),
     [(False, "{{ a }}"), (True, "1")],
 )
-def test_compose(b, capsys, configs, realize):
-    result = config.compose(configs, realize=realize)
+@mark.parametrize("wrap", [str, Path])
+def test_compose(b, capsys, configs, realize, wrap):
+    result = config.compose([wrap(x) for x in configs], realize=realize)
     assert result.data == {"a": 1, "b": b, "c": 2}
     assert "c: 2" in capsys.readouterr().out
 
@@ -48,11 +51,12 @@ def test_compose_to_dict(b, capsys, configs, realize):
     assert not capsys.readouterr().out
 
 
+@mark.parametrize("wrap", [str, Path])
 @mark.usefixtures("config_root")
-def test_compose_to_dict_filesystem_and_resources(tmp_path):
+def test_compose_to_dict_filesystem_and_resources(tmp_path, wrap):
     other = tmp_path / "other.yaml"
     other.write_text("a: 2\nd: 3\n")
-    result = config.compose_to_dict(["a.yaml", str(other), "x/y/b.yaml"])
+    result = config.compose_to_dict([wrap("a.yaml"), wrap(other), wrap("x/y/b.yaml")])
     assert result == {"a": 2, "b": "{{ a }}", "c": 2, "d": 3}
 
 
@@ -79,15 +83,16 @@ def test__node(expected, key_path):
     assert config._node(key_path).read_text() == expected
 
 
+@mark.parametrize("wrap", [str, Path])
 @mark.usefixtures("config_root")
-def test__paths(monkeypatch, tmp_path):
+def test__paths(monkeypatch, tmp_path, wrap):
     cwd = tmp_path / "cwd"
     cwd.mkdir()
     monkeypatch.chdir(cwd)
     (cwd / "a.yaml").write_text("a: 2\n")  # shadows the a.yaml config resource
     other = tmp_path / "other.yaml"
     other.write_text("d: 3\n")
-    with config._paths(["a.yaml", str(other), "x/y/b.yaml"]) as paths:
+    with config._paths([wrap("a.yaml"), wrap(other), wrap("x/y/b.yaml")]) as paths:
         assert [path.read_text() for path in paths] == ["a: 2\n", "d: 3\n", "c: 2\n"]
 
 

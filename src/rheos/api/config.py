@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from contextlib import ExitStack, contextmanager
 from importlib import resources
 from importlib.resources.abc import Traversable
@@ -26,7 +26,7 @@ def catalog() -> list[str]:
     return sorted(_walk(_root(), []))
 
 
-def compose(configs: list[str], *, realize: bool = False) -> Config:
+def compose(configs: Sequence[str | Path], *, realize: bool = False) -> Config:
     """
     Compose the given configs, writing the result to stdout.
 
@@ -37,7 +37,7 @@ def compose(configs: list[str], *, realize: bool = False) -> Config:
         return uw_compose(paths, realize=realize)
 
 
-def compose_to_dict(configs: list[str], *, realize: bool = False) -> dict:
+def compose_to_dict(configs: Sequence[str | Path], *, realize: bool = False) -> dict:
     """
     Compose the given configs and return the result as a dict.
 
@@ -77,7 +77,7 @@ def _node(key_path: str) -> Traversable:
 
 
 @contextmanager
-def _paths(configs: list[str]) -> Iterator[list[Path]]:
+def _paths(configs: Sequence[str | Path]) -> Iterator[list[Path]]:
     """
     Yield filesystem paths for the given configs, preferring existing files over config resources.
     """
@@ -85,7 +85,7 @@ def _paths(configs: list[str]) -> Iterator[list[Path]]:
         yield [
             Path(config)
             if Path(config).is_file()
-            else stack.enter_context(resources.as_file(_node(config)))
+            else stack.enter_context(resources.as_file(_node(Path(config).as_posix())))
             for config in configs
         ]
 
