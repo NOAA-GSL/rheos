@@ -37,28 +37,16 @@ line-length = 100
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-  "ANN401", # any-type
   "COM812", # missing-trailing-comma
   "CPY001", # missing-copyright-notice
-  "D100",   # undocumented-public-module
-  "D103",   # undocumented-public-function
-  "D104",   # undocumented-public-package
-  "D200",   # unnecessary-multiline-docstring
-  "D203",   # incorrect-blank-line-before-class
-  "D205",   # missing-blank-line-after-summary
-  "D212",   # multi-line-summary-first-line
-  "FBT001", # boolean-type-hint-positional-argument
-  "FBT002", # boolean-default-value-positional-argument
-  "T201",   # "print
-  "TC006",  # runtime-cast-value
+  "D",      # documentation
+  "T201",   # print
   "UP031",  # printf-string-formatting
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/*" = [
-  "ANN001", # missing-type-function-argument
-  "ANN201", # missing-return-type-undocumented-public-function
-  "ANN202", # missing-return-type-private-function
+"tests/*" = [
+  "ANN",    # annotations
   "PT013",  # pytest-incorrect-pytest-import
   "S101",   # assert
   "SLF001", # private-member-access
