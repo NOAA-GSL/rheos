@@ -36,7 +36,10 @@ MODES: dict[str, dict[str, tuple[Callable[..., None], dict[str, dict[str, Any]]]
                 },
             },
         ),
-        "ls": (lambda: print("".join(f"{x}\n" for x in config.catalog()), end=""), {}),
+        "ls": (
+            lambda: print("".join(f"{x}\n" for x in config.catalog()), end=""),
+            {},
+        ),
     },
 }
 
