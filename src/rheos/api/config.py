@@ -4,56 +4,24 @@ from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
 
-from uwtools.api.config import compose as uw_compose
-from uwtools.api.config import compose_to_dict as uw_compose_to_dict
-from uwtools.config.formats.base import Config
+from uwtools.api.config import YAMLConfig, compose_to_dict
 
 from rheos.util import pkgname
 
 
-def cat(key_path: str) -> None:
-    """
-    Print the text of the config resource at the given slash-separated key path.
-    """
-    print(read(key_path.split("/")), end="")
-
-
 def catalog() -> list[str]:
     """
-    Catalog available config resources as slash-separated paths relative to the config resources
-    root.
+    Catalog config resources as slash-separated paths relative to the config-resources root.
     """
     return sorted(_walk(_root(), []))
 
 
-def compose(configs: Sequence[str | Path], *, realize: bool = False) -> Config:
+def compose(configs: Sequence[str | Path], *, realize: bool = False) -> YAMLConfig:
     """
-    Compose the given configs, writing the result to stdout.
-
-    Each config is a filesystem path, if such a file exists, or else a slash-separated key path to a
-    config resource.
+    Return the composition of the given configs.
     """
     with _paths(configs) as paths:
-        return uw_compose(paths, realize=realize)
-
-
-def compose_to_dict(configs: Sequence[str | Path], *, realize: bool = False) -> dict:
-    """
-    Compose the given configs and return the result as a dict.
-
-    Each config is a filesystem path, if such a file exists, or else a slash-separated key path to a
-    config resource.
-    """
-    with _paths(configs) as paths:
-        return uw_compose_to_dict(paths, realize=realize)
-
-
-def ls() -> None:
-    """
-    Print available config resources, one per line.
-    """
-    for line in catalog():
-        print(line)
+        return YAMLConfig(compose_to_dict(paths, realize=realize))
 
 
 def read(key_path: list[str]) -> str:

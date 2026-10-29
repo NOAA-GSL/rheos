@@ -1,22 +1,23 @@
 import json
 import sys
 from argparse import ArgumentParser, HelpFormatter, Namespace, _ArgumentGroup
-from importlib import import_module
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any, NoReturn
 
 from uwtools.api.logging import use_uwtools_logger
 
+from rheos.api import config
 from rheos.util import pkgname, resource
 
-# Mapping of modes (rheos.api modules) to actions, and of actions to functions in those modules
-# plus their arguments (names mapped to ArgumentParser.add_argument() keyword arguments, where names
-# starting with "-" are optional and others are required):
+# Mapping of modes to actions, and of actions to functions plus their arguments (names mapped to
+# ArgumentParser.add_argument() keyword arguments, where names starting with "-" are optional and
+# others are required):
 
-MODES: dict[str, dict[str, tuple[str, dict[str, dict[str, Any]]]]] = {
+MODES: dict[str, dict[str, tuple[Callable[..., None], dict[str, dict[str, Any]]]]] = {
     "config": {
         "cat": (
-            "cat",
+            lambda key_path: print(config.read(key_path.split("/")), end=""),
             {
                 "key_path": {
                     "help": "Slash-separated path to config resource",
@@ -25,7 +26,7 @@ MODES: dict[str, dict[str, tuple[str, dict[str, dict[str, Any]]]]] = {
             },
         ),
         "compose": (
-            "compose",
+            lambda configs, realize: print(config.compose(configs, realize=realize)),
             {
                 "--realize": {"action": "store_true", "help": "Realize the composed config"},
                 "configs": {
@@ -35,7 +36,7 @@ MODES: dict[str, dict[str, tuple[str, dict[str, dict[str, Any]]]]] = {
                 },
             },
         ),
-        "ls": ("ls", {}),
+        "ls": (lambda: print("".join(f"{x}\n" for x in config.catalog()), end=""), {}),
     },
 }
 
@@ -45,10 +46,9 @@ MODES: dict[str, dict[str, tuple[str, dict[str, dict[str, Any]]]]] = {
 def main() -> None:
     args = _parse_args(sys.argv)
     use_uwtools_logger(verbose=args.debug)
-    module = import_module(f"{pkgname}.api.{args.mode}")
     function, arguments = MODES[args.mode][args.action]
     dests = [name.lstrip("-") for name in arguments]
-    getattr(module, function)(**{dest: getattr(args, dest) for dest in dests})
+    function(**{dest: getattr(args, dest) for dest in dests})
 
 
 # Private

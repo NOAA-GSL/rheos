@@ -1,6 +1,5 @@
 import sys
 from argparse import Namespace
-from importlib import import_module
 from unittest.mock import patch
 
 from pytest import fixture, mark, raises
@@ -23,7 +22,11 @@ def version():
     ("action", "extra", "expected"),
     [
         ("cat", {"key_path": "x/y/b.yaml"}, "c: 2\n"),
-        ("compose", {"configs": ["a.yaml", "x/y/b.yaml"], "realize": False}, "c: 2"),
+        (
+            "compose",
+            {"configs": ["a.yaml", "x/y/b.yaml"], "realize": False},
+            "a: 1\nb: '{{ a }}'\nc: 2\n",
+        ),
         ("ls", {}, "a.yaml\nx/y/b.yaml\n"),
     ],
 )
@@ -42,11 +45,22 @@ def test_main(action, capsys, expected, extra):
     assert expected in capsys.readouterr().out
 
 
-@mark.parametrize(("mode", "actions"), cli.MODES.items())
-def test_modes(mode, actions):
-    module = import_module(f"rheos.api.{mode}")
-    for function, _ in actions.values():
-        assert callable(getattr(module, function))
+@mark.parametrize(
+    ("args", "expected"),
+    [
+        (["cat", "a.yaml"], "a: 1\nb: '{{ a }}'\n"),
+        (["cat", "x/y/b.yaml"], "c: 2\n"),
+        (["ls"], "a.yaml\nx/y/b.yaml\n"),
+    ],
+)
+@mark.usefixtures("config_root")
+def test_main_config(args, capsys, expected):
+    with (
+        patch.object(cli, "use_uwtools_logger"),
+        patch.object(sys, "argv", ["rheos", "config", *args]),
+    ):
+        cli.main()
+    assert capsys.readouterr().out == expected
 
 
 @mark.parametrize(

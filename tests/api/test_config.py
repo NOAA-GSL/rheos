@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from pytest import fixture, mark
+from uwtools.api.config import YAMLConfig
 
 from rheos.api import config
 
@@ -15,15 +16,6 @@ def configs(config_root):  # noqa: ARG001
 # Tests
 
 
-@mark.parametrize(
-    ("key_path", "expected"), [("a.yaml", "a: 1\nb: '{{ a }}'\n"), ("x/y/b.yaml", "c: 2\n")]
-)
-@mark.usefixtures("config_root")
-def test_cat(capsys, expected, key_path):
-    config.cat(key_path)
-    assert capsys.readouterr().out == expected
-
-
 @mark.usefixtures("config_root")
 def test_catalog():
     assert config.catalog() == ["a.yaml", "x/y/b.yaml"]
@@ -36,34 +28,18 @@ def test_catalog():
 @mark.parametrize("wrap", [str, Path])
 def test_compose(b, capsys, configs, realize, wrap):
     result = config.compose([wrap(x) for x in configs], realize=realize)
+    assert isinstance(result, YAMLConfig)
     assert result.data == {"a": 1, "b": b, "c": 2}
-    assert "c: 2" in capsys.readouterr().out
-
-
-@mark.parametrize(
-    ("realize", "b"),
-    [(False, "{{ a }}"), (True, "1")],
-)
-def test_compose_to_dict(b, capsys, configs, realize):
-    result = config.compose_to_dict(configs, realize=realize)
-    assert type(result) is dict
-    assert result == {"a": 1, "b": b, "c": 2}
     assert not capsys.readouterr().out
 
 
 @mark.parametrize("wrap", [str, Path])
 @mark.usefixtures("config_root")
-def test_compose_to_dict_filesystem_and_resources(tmp_path, wrap):
+def test_compose_filesystem_and_resources(tmp_path, wrap):
     other = tmp_path / "other.yaml"
     other.write_text("a: 2\nd: 3\n")
-    result = config.compose_to_dict([wrap("a.yaml"), wrap(other), wrap("x/y/b.yaml")])
-    assert result == {"a": 2, "b": "{{ a }}", "c": 2, "d": 3}
-
-
-@mark.usefixtures("config_root")
-def test_ls(capsys):
-    config.ls()
-    assert capsys.readouterr().out == "a.yaml\nx/y/b.yaml\n"
+    result = config.compose([wrap("a.yaml"), wrap(other), wrap("x/y/b.yaml")])
+    assert result.data == {"a": 2, "b": "{{ a }}", "c": 2, "d": 3}
 
 
 @mark.parametrize(
