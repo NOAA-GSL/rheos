@@ -29,7 +29,6 @@ test:
     - pydantic 2.14.*
     - pytest 9.1.*
     - pytest-cov 7.1.*
-    - pytest-mock 3.16.*
     - pytest-randomly 5.0.*
     - python {{ pymin }}
     - ruff 0.17.*

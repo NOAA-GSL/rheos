@@ -15,7 +15,7 @@ docs() {
   local outdir
   outdir=$PWD/docs/api
   msg Building documentation in $outdir
-  PYTHONWARNINGS="ignore:Error parsing type annotation" pdoc --output-directory $outdir src/rheos
+  PYTHONWARNINGS="ignore:Error parsing type annotation" pdoc --output-directory $outdir rheos.api
   msg Built documentation in $outdir
 }
 

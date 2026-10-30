@@ -1,0 +1,93 @@
+from pathlib import Path
+
+from pytest import fixture, mark
+from uwtools.api.config import YAMLConfig
+
+from rheos.api import config
+
+# Fixtures
+
+
+@fixture
+def configs(config_root):  # noqa: ARG001
+    return ["a.yaml", "x/y/b.yaml"]
+
+
+# Tests
+
+
+@mark.usefixtures("config_root")
+def test_catalog():
+    assert config.catalog() == ["a.yaml", "x/y/b.yaml"]
+
+
+@mark.parametrize(
+    ("realize", "b"),
+    [(False, "{{ a }}"), (True, "1")],
+)
+@mark.parametrize("wrap", [str, Path])
+def test_compose(b, capsys, configs, realize, wrap):
+    result = config.compose([wrap(x) for x in configs], realize=realize)
+    assert isinstance(result, YAMLConfig)
+    assert result.data == {"a": 1, "b": b, "c": 2}
+    assert not capsys.readouterr().out
+
+
+@mark.parametrize("wrap", [str, Path])
+@mark.usefixtures("config_root")
+def test_compose_filesystem_and_resources(tmp_path, wrap):
+    other = tmp_path / "other.yaml"
+    other.write_text("a: 2\nd: 3\n")
+    result = config.compose([wrap("a.yaml"), wrap(other), wrap("x/y/b.yaml")])
+    assert result.data == {"a": 2, "b": "{{ a }}", "c": 2, "d": 3}
+
+
+@mark.parametrize(
+    ("key_path", "expected"),
+    [(["a.yaml"], "a: 1\nb: '{{ a }}'\n"), (["x", "y", "b.yaml"], "c: 2\n")],
+)
+@mark.usefixtures("config_root")
+def test_read(expected, key_path):
+    assert config.read(key_path) == expected
+
+
+@mark.parametrize(
+    ("key_path", "expected"), [("a.yaml", "a: 1\nb: '{{ a }}'\n"), ("x/y/b.yaml", "c: 2\n")]
+)
+@mark.usefixtures("config_root")
+def test__node(expected, key_path):
+    assert config._node(key_path).read_text() == expected
+
+
+@mark.parametrize("wrap", [str, Path])
+@mark.usefixtures("config_root")
+def test__paths(monkeypatch, tmp_path, wrap):
+    cwd = tmp_path / "cwd"
+    cwd.mkdir()
+    monkeypatch.chdir(cwd)
+    (cwd / "a.yaml").write_text("a: 2\n")  # shadows the a.yaml config resource
+    other = tmp_path / "other.yaml"
+    other.write_text("d: 3\n")
+    with config._paths([wrap("a.yaml"), wrap(other), wrap("x/y/b.yaml")]) as paths:
+        assert [path.read_text() for path in paths] == ["a: 2\n", "d: 3\n", "c: 2\n"]
+
+
+def test__root():
+    root = config._root()
+    assert root.name == "config"
+    assert (root / "__init__.py").is_file()
+
+
+def test__walk(tmp_path):
+    for relpath in [
+        "__init__.py",
+        "__pycache__/x.pyc",
+        "a/__init__.py",
+        "a/b/c/d.yaml",
+        "a/e.yaml",
+        "f.yaml",
+    ]:
+        path = tmp_path / relpath
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch()
+    assert sorted(config._walk(tmp_path, [])) == ["a/b/c/d.yaml", "a/e.yaml", "f.yaml"]

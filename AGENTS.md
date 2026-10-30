@@ -7,3 +7,4 @@
 - Order functions in modules, methods in classes, keys in dictionaries, items in lists, etc. lexicographically unless another ordering is required, in which case you should add a comment explaining the alternative ordering.
 - When writing unit tests, prefer real file IO (generally using the `tmp_path` `pytest` fixture) to mocking unless it would significantly slow down the tests. When you decide to mock, explain why.
 - When writing unit tests, prefer use of the `@mark.parametrize` decorator from `pytest` to writing multiple, largely identical tests.
+- Write multiline docstrings, i.e. the docstring between standalone `"""` lines.
