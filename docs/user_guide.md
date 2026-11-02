@@ -45,7 +45,9 @@ The resulting executables are placed in `rrfs-workflow/exec`.
 
 ### 3. Configure the runtime environment
 
-To load the runtime environment for MPAS and WPS on Ursa, execute the following commands from the repository root:
+The following commands load the module environments for running the executables on Ursa. Execute them from the repository root.
+
+MPAS and WPS:
 
 ```text
 module purge
@@ -53,6 +55,20 @@ module use "$PWD/modulefiles"
 module load rrfs/ursa.intel
 ```
 
-MPASSIT and UPP use separate module environments, which are configured automatically by their respective build scripts.
+MPASSIT:
+
+```text
+module purge
+module use "$PWD/sorc/MPASSIT/modulefiles"
+module load build.ursa.intel
+```
+
+UPP:
+
+```text
+module purge
+module use "$PWD/sorc/UPP/modulefiles"
+module load ursa_intel
+```
 
 [← Back to Index](index.md)
