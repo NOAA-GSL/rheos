@@ -45,12 +45,14 @@ The resulting executables are placed in `rrfs-workflow/exec`.
 
 ### 3. Configure the runtime environment
 
-To load the RRFS runtime environment on Ursa, execute the following commands from the repository root:
+To load the runtime environment for MPAS and WPS on Ursa, execute the following commands from the repository root:
 
 ```text
 module purge
 module use "$PWD/modulefiles"
 module load rrfs/ursa.intel
 ```
+
+MPASSIT and UPP use separate module environments, which are configured automatically by their respective build scripts.
 
 [← Back to Index](index.md)
