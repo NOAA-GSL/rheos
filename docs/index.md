@@ -6,4 +6,5 @@
 ## Documentation
 
 - [Contributor Guide](contributor_guide.md)
+- [User Guide](user_guide.md)
 - [API Reference](https://noaa-gsl.github.io/rheos/)
