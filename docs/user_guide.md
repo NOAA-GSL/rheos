@@ -22,12 +22,12 @@ Some nested submodules are configured with `update = none` and will be skipped d
 
 The following components have been successfully built on Ursa:
 
-| Component | Build command | Executable(s) |
+| Component    | Build command     | Executable(s)                                   |
 |---|---|---|
-| WPS (ungrib) | `./build.wps`     | `ungrib.x` |
+| WPS (ungrib) | `./build.wps`     | `ungrib.x`                                      |
 | MPAS         | `./build.mpas`    | `init_atmosphere_model.x`, `atmosphere_model.x` |
-| MPASSIT      | `./build.mpassit` | `mpassit.x` |
-| UPP          | `./build.upp`     | `upp.x` |
+| MPASSIT      | `./build.mpassit` | `mpassit.x`                                     |
+| UPP          | `./build.upp`     | `upp.x`                                         |
 
 All build commands should be executed from the `rrfs-workflow/sorc` directory:
 
@@ -42,8 +42,6 @@ cd sorc/
 Each build script automatically configures its required environment. No manual module loading is necessary before building.
 
 The resulting executables are placed in `rrfs-workflow/exec`.
-
-Other components supported by `build.all`, including `MPASBlend`, `rank_run`, `RDAS`, and `RRFS_UTILS`, were not tested as part of this procedure. The alternative MPAS CMake build has also not been tested.
 
 ### 3. Configure the runtime environment
 
