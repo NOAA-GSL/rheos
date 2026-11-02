@@ -4,7 +4,7 @@
 
 ## Build Procedure
 
-`rheos` requires users to provide executables for the components they intend to run. This procedure describes how to build those executables from the RRFS-MPAS-JEDI workflow repository on Ursa.
+`rheos` requires users to provide executables for the components they intend to run. This procedure describes how to build those executables from the `rrfs-mpas-jedi` branch of the `rrfs-workflow` repository on Ursa.
 
 ### 1. Clone the repository
 
